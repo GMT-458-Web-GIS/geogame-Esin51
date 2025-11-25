@@ -8,22 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
     <style>
-
         body {
             margin: 0;
             padding: 0;
             background: black;
             color: white;
             font-family: Arial, sans-serif;
-            height: 100vh;
-            overflow: hidden; /* SAYFALAR ARASI GEÇİŞTE TAŞMA OLMASIN DİYE */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        /* SAYFA GÖSTER/GİZLE */
-        .page { display: none; }
+        /* SAYFA GÖRSEL GEÇİŞ YÖNETİMİ */
+        .page { display: none; min-height: 100vh; }
         .active { display: block; }
 
         h1 {
@@ -32,30 +26,28 @@
             letter-spacing: 5px;
             color: #ffe98a;
             text-shadow: 0 0 20px #ffb400;
-            margin-top: 20px;
-            margin-bottom: 5px;
+            margin-top: 25px;
             text-align: center;
         }
 
-        /* Orta alan */
+        /* Giriş alanı */
         .center-area {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            margin-top: 40px;
         }
 
         /* Dünya animasyonu */
-        @keyframes slowBounce {
-            0%   { transform: translateY(0); }
-            50%  { transform: translateY(15px); }
-            100% { transform: translateY(0); }
+        @keyframes slowBounce { 
+            0% { transform: translateY(0); } 
+            50% { transform: translateY(15px); } 
+            100% { transform: translateY(0); } 
         }
 
-        @keyframes glowPulse {
-            0%   { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
-            50%  { filter: drop-shadow(0 0 35px rgba(0,170,255,0.9)); }
+        @keyframes glowPulse { 
+            0% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); } 
+            50% { filter: drop-shadow(0 0 35px rgba(0,170,255,0.9)); } 
             100% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
         }
 
@@ -66,30 +58,23 @@
                 glowPulse 3s ease-in-out infinite;
         }
 
-        /* Giriş ekranındaki kutu */
+        /* PEMBE GİRİŞ KUTUSU */
         .neon-box {
             margin-top: 20px;
             padding: 25px;
             border-radius: 15px;
             width: 350px;
             background: rgba(0,0,0,0.4);
-            border: 2px solid #38b8ff;
-            box-shadow:
-                0 0 10px #38b8ff,
-                0 0 25px #38b8ff,
-                inset 0 0 15px #38b8ff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
 
-        /* Pembe neon */
-        .pink {
-            border: 2px solid #ff3fa8 !important;
+            border: 2px solid #ff3fa8;
             box-shadow:
                 0 0 10px #ff3fa8,
                 0 0 25px #ff3fa8,
-                inset 0 0 15px #ff3fa8 !important;
+                inset 0 0 15px #ff3fa8;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .input-name,
@@ -103,34 +88,36 @@
             margin-bottom: 10px;
         }
 
-        .btn-enter:hover {
-            background: #d3d3d3;
-        }
+        .btn-enter:hover { background: #d3d3d3; }
 
-        /* HOW TO PLAY – KUTU */
+        /* HOW TO PLAY KUTUSU */
         .content-box {
-            width: 60%;
+            width: 75%;
+            max-width: 900px;
+            margin: auto;
+            margin-top: 25px;
             padding: 40px;
             background: rgba(0,0,0,0.4);
             border-radius: 15px;
+
             border: 2px solid #38b8ff;
             box-shadow:
                 0 0 15px #38b8ff,
                 0 0 30px #38b8ff,
                 inset 0 0 15px #38b8ff;
+
             font-size: 22px;
             line-height: 1.6;
         }
 
-        /* HOW TO PLAY SAHİFESİ KAYDIRILABİLİR */
+        /* HOW TO PLAY scroll */
         #page-howto {
-            height: 100vh;
-            overflow-y: auto;
-            padding-bottom: 40px;
+            padding-bottom: 70px;
         }
 
+        /* Continue butonu */
         .how-btn {
-            margin-top: 25px;
+            margin-top: 35px;
             padding: 14px 45px;
             background: white;
             color: #0b114f;
@@ -138,6 +125,21 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* GOOD LUCK yazısı */
+        .goodluck {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 45px;
+            color: #5ecbff;
+            text-shadow:
+                0 0 10px #38b8ff,
+                0 0 20px #38b8ff,
+                0 0 30px #38b8ff;
         }
 
     </style>
@@ -153,8 +155,8 @@
             <img src="earth.png" class="planet-img" alt="Earth">
 
             <div class="neon-box">
-                <input type="text" class="input-name pink" placeholder="Enter Your Name" id="playerName">
-                <button class="btn-enter pink" onclick="goHowToPlay()">Continue</button>
+                <input type="text" class="input-name" placeholder="Enter Your Name" id="playerName">
+                <button class="btn-enter" onclick="goHowToPlay()">Continue</button>
             </div>
         </div>
 
@@ -165,31 +167,29 @@
 
         <h1>HOW TO PLAY?</h1>
 
-        <div class="center-area">
+        <div class="content-box">
+            <p><strong>1. Enter your name</strong><br>
+            Type your name on the main screen and press Continue.</p>
 
-            <div class="content-box">
-                <p><strong>1. Enter your name</strong><br>
-                Type your name on the main screen and press Continue.</p>
+            <p><strong>2. Choose your special ability</strong><br>
+            Each character will have different power, speed and cooldown.</p>
 
-                <p><strong>2. Choose your special ability</strong><br>
-                Each character will have different power, speed and cooldown.</p>
+            <p><strong>3. Destroy as many targets as possible</strong><br>
+            Smash the geo-targets fast and accurately.</p>
 
-                <p><strong>3. Destroy as many targets as possible</strong><br>
-                Smash the geo-targets fast and accurately.</p>
+            <p><strong>4. Watch the timer</strong><br>
+            You only have 60 seconds. Every second counts.</p>
 
-                <p><strong>4. Watch the timer</strong><br>
-                You only have 60 seconds. Every second counts.</p>
+            <p><strong>5. Avoid penalties</strong><br>
+            Missing or hitting wrong spots reduces your score.</p>
 
-                <p><strong>5. Avoid penalties</strong><br>
-                Missing or hitting wrong spots reduces your score.</p>
-
-                <p><strong>6. Beat the high score</strong><br>
-                Try to become the ultimate Planet Smasher.</p>
-            </div>
-
-            <button class="how-btn" onclick="alert('Karakter sayfası sırada!')">Continue</button>
-
+            <p><strong>6. Beat the high score</strong><br>
+            Try to become the ultimate Planet Smasher.</p>
         </div>
+
+        <div class="goodluck">GOOD LUCK!</div>
+
+        <button class="how-btn">Continue</button>
 
     </div>
 
