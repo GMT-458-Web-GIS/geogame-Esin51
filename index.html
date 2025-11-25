@@ -5,34 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planet Smash</title>
 
-    <!-- Horror / dripping style font -->
+    <!-- Horror-style font -->
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: black; /* SİYAH ARKA PLAN */
+            background: black;
             color: white;
             text-align: center;
             font-family: Arial, sans-serif;
-            position: relative;
             overflow: hidden;
-        }
-
-        /* PNG yıldız katmanı */
-        .stars-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('stars.png'); /* PNG'yi böyle kaydet */
-            background-size: cover;
-            background-position: top center;
-            background-repeat: no-repeat;
-            opacity: 0.7; /* hafif saydam, çok güzel durur */
-            pointer-events: none; /* tıklamayı engellemesin */
         }
 
         h1 {
@@ -42,19 +26,29 @@
             letter-spacing: 5px;
             color: #ffe98a;
             text-shadow: 0 0 20px #ffb400;
-            position: relative;
-            z-index: 2;
+        }
+
+        /* Dünya zıplama animasyonu */
+        @keyframes slowBounce {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(15px); }
+            100% { transform: translateY(0); }
+        }
+
+        /* Glow nefes alma animasyonu */
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 15px rgba(0, 150, 255, 0.4)); }
+            50% { filter: drop-shadow(0 0 35px rgba(0, 170, 255, 0.9)); }
+            100% { filter: drop-shadow(0 0 15px rgba(0, 150, 255, 0.4)); }
         }
 
         .planet-img {
             margin-top: 40px;
-            width: 350px;
+            width: 420px;
             height: auto;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            position: relative;
-            z-index: 2;
+            animation: 
+                slowBounce 4s ease-in-out infinite,
+                glowPulse 3s ease-in-out infinite;
         }
 
         .input-name {
@@ -67,8 +61,6 @@
             width: 260px;
             text-align: center;
             color: #0b114f;
-            position: relative;
-            z-index: 2;
         }
 
         .btn-enter {
@@ -81,8 +73,6 @@
             background: white;
             color: #0b114f;
             font-weight: bold;
-            position: relative;
-            z-index: 2;
         }
 
         .btn-enter:hover {
@@ -91,9 +81,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Yıldız PNG overlay -->
-    <div class="stars-overlay"></div>
 
     <h1>PLANET SMASH</h1>
 
