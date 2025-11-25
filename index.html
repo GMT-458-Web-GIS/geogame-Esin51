@@ -12,42 +12,27 @@
         body {
             margin: 0;
             padding: 0;
-            background: #0b114f; /* LACİVERT FON */
-            overflow: hidden;
+            background: black; /* SİYAH ARKA PLAN */
             color: white;
             text-align: center;
             font-family: Arial, sans-serif;
             position: relative;
+            overflow: hidden;
         }
 
-        /* YILDIZ PARILTI EFEKTİ (CSS box-shadow) */
-        .stars {
-            width: 2px;
-            height: 2px;
-            background: white;
-            box-shadow: 
-                50px 80px white,
-                120px 200px white,
-                300px 150px white,
-                500px 400px white,
-                700px 50px white,
-                900px 250px white,
-                100px 500px white,
-                400px 300px white,
-                600px 600px white,
-                800px 450px white,
-                200px 700px white,
-                950px 550px white,
-                350px 750px white;
-            animation: blink 2s ease-in-out infinite alternate;
+        /* PNG yıldız katmanı */
+        .stars-overlay {
             position: absolute;
             top: 0;
             left: 0;
-        }
-
-        @keyframes blink {
-            0% { opacity: 0.2; }
-            100% { opacity: 1; }
+            width: 100%;
+            height: 100%;
+            background-image: url('stars.png'); /* PNG'yi böyle kaydet */
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            opacity: 0.7; /* hafif saydam, çok güzel durur */
+            pointer-events: none; /* tıklamayı engellemesin */
         }
 
         h1 {
@@ -57,6 +42,8 @@
             letter-spacing: 5px;
             color: #ffe98a;
             text-shadow: 0 0 20px #ffb400;
+            position: relative;
+            z-index: 2;
         }
 
         .planet-img {
@@ -66,6 +53,8 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+            position: relative;
+            z-index: 2;
         }
 
         .input-name {
@@ -78,6 +67,8 @@
             width: 260px;
             text-align: center;
             color: #0b114f;
+            position: relative;
+            z-index: 2;
         }
 
         .btn-enter {
@@ -90,22 +81,22 @@
             background: white;
             color: #0b114f;
             font-weight: bold;
+            position: relative;
+            z-index: 2;
         }
 
         .btn-enter:hover {
             background: #d3d3d3;
         }
-
     </style>
 </head>
 <body>
 
-    <!-- YILDIZ EFEKTİ -->
-    <div class="stars"></div>
+    <!-- Yıldız PNG overlay -->
+    <div class="stars-overlay"></div>
 
     <h1>PLANET SMASH</h1>
 
-    <!-- DÜNYA GERİ GELDİ -->
     <img src="earth.png" class="planet-img" alt="Earth">
 
     <input type="text" class="input-name" placeholder="Enter Your Name">
