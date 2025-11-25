@@ -4,39 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planet Smash</title>
+
+    <!-- Special horror / dripping style font -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
             padding: 0;
             background: #0b114f;
-            background-image: url('stars.png'); /* Yıldızlı arka plan – birazdan ekleriz */
+            background-image: url('stars.png'); 
             background-size: cover;
             background-repeat: repeat;
-            font-family: Arial, sans-serif;
             color: white;
             text-align: center;
         }
 
         h1 {
             margin-top: 60px;
-            font-size: 60px;
-            letter-spacing: 2px;
-            font-weight: bold;
-            text-shadow: 0 0 10px #ffffffaa;
+            font-size: 80px;
+            font-family: 'Creepster', cursive; /* Özel font */
+            letter-spacing: 5px;
+            color: #ffe98a;
+            text-shadow: 0 0 20px #ffb400;
         }
 
         .planet-img {
             margin-top: 40px;
-            width: 320px; /* Bu PNG büyük olduğu için boyutu biraz büyüttüm */
+            width: 350px;
             height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .btn-enter {
-            margin-top: 30px;
-            padding: 12px 30px;
-            font-size: 20px;
+            margin-top: 25px;
+            padding: 14px 40px;
+            font-size: 22px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             background: white;
             color: #0b114f;
@@ -46,11 +53,12 @@
         .btn-enter:hover {
             background: #d3d3d3;
         }
+
     </style>
 </head>
 <body>
 
-    <h1>Planet Smash</h1>
+    <h1>PLANET SMASH</h1>
 
     <img src="earth.png" class="planet-img" alt="Exploding Earth">
 
