@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planet Smash</title> 
+    <title>Planet Smash</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
@@ -14,17 +14,31 @@
             background: black;
             color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
+            height: 100vh; /* Tam ekran */
             overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
-            margin-top: 20px;   /* BAŞLIK YUKARI ALINDI */
             font-size: 80px;
             font-family: 'Creepster', cursive;
             letter-spacing: 5px;
             color: #ffe98a;
             text-shadow: 0 0 20px #ffb400;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* Dikey ortalama için ana kutu */
+        .center-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
         }
 
         @keyframes slowBounce {
@@ -41,38 +55,37 @@
 
         .planet-img {
             width: 420px;
-            margin-top: 10px; /* DÜNYA YUKARI ALINDI */
             animation:
                 slowBounce 4s ease-in-out infinite,
                 glowPulse 3s ease-in-out infinite;
         }
 
         .neon-box {
-            margin-top: 10px; /* KUTU YUKARI ALINDI */
+            margin-top: 20px;
             padding: 25px;
             border-radius: 15px;
             width: 350px;
-            background: rgba(0, 0, 0, 0.4);
-            margin-left: auto;
-            margin-right: auto;
+            background: rgba(0,0,0,0.4);
 
             border: 2px solid #38b8ff;
             box-shadow:
                 0 0 10px #38b8ff,
                 0 0 25px #38b8ff,
                 inset 0 0 15px #38b8ff;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .input-name {
             padding: 12px 20px;
             font-size: 20px;
-            border: none;
             border-radius: 8px;
-            outline: none;
             width: 280px;
             text-align: center;
-            margin-bottom: 15px;
-            color: #0b114f;
+            margin-bottom: 10px;
+            border: none;
         }
 
         .btn-enter {
@@ -86,22 +99,19 @@
             font-weight: bold;
             width: 280px;
         }
-
-        .btn-enter:hover {
-            background: #d3d3d3;
-        }
-
     </style>
 </head>
 <body>
 
     <h1>PLANET SMASH</h1>
 
-    <img src="earth.png" class="planet-img" alt="Earth">
+    <div class="center-area">
+        <img src="earth.png" class="planet-img" alt="Earth">
 
-    <div class="neon-box">
-        <input type="text" class="input-name" placeholder="Enter Your Name">
-        <button class="btn-enter">Continue</button>
+        <div class="neon-box">
+            <input type="text" class="input-name" placeholder="Enter Your Name">
+            <button class="btn-enter">Continue</button>
+        </div>
     </div>
 
 </body>
