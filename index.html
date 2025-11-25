@@ -12,12 +12,42 @@
         body {
             margin: 0;
             padding: 0;
-            background-image: url('stars.png');
-            background-size: cover;
-            background-repeat: repeat;
+            background: #0b114f; /* LACİVERT FON */
+            overflow: hidden;
             color: white;
             text-align: center;
             font-family: Arial, sans-serif;
+            position: relative;
+        }
+
+        /* YILDIZ PARILTI EFEKTİ (CSS box-shadow) */
+        .stars {
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 
+                50px 80px white,
+                120px 200px white,
+                300px 150px white,
+                500px 400px white,
+                700px 50px white,
+                900px 250px white,
+                100px 500px white,
+                400px 300px white,
+                600px 600px white,
+                800px 450px white,
+                200px 700px white,
+                950px 550px white,
+                350px 750px white;
+            animation: blink 2s ease-in-out infinite alternate;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
         }
 
         h1 {
@@ -65,18 +95,20 @@
         .btn-enter:hover {
             background: #d3d3d3;
         }
+
     </style>
 </head>
 <body>
 
+    <!-- YILDIZ EFEKTİ -->
+    <div class="stars"></div>
+
     <h1>PLANET SMASH</h1>
 
-    <img src="earth.png" class="planet-img" alt="Exploding Earth">
+    <!-- DÜNYA GERİ GELDİ -->
+    <img src="earth.png" class="planet-img" alt="Earth">
 
-    <!-- İsim giriş kutusu -->
     <input type="text" class="input-name" placeholder="Enter Your Name">
-
-    <!-- Sayfayı geçmek için buton -->
     <button class="btn-enter">Continue</button>
 
 </body>
