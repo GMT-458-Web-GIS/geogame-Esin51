@@ -150,49 +150,31 @@
 
     </div>
 
-    <!-- PAGE 2: HOW TO PLAY -->
-    <div id="page-howto" class="page">
+    <!-- HOW TO PLAY PAGE -->
+<div id="howto" class="page page-howto">
+    <h1>HOW TO PLAY?</h1>
 
-        <h1>HOW TO PLAY</h1>
+    <div class="content-box">
+        <p><strong>1. Enter your name</strong><br>
+        Type your name on the main screen and press Continue.</p>
 
-        <div class="center-area">
+        <p><strong>2. Choose your special ability</strong><br>
+        Each character will have different power, speed and cooldown.</p>
 
-            <div class="content-box">
-                <p><strong>1. Enter your name</strong><br>
-                Type your name on the main screen and press Continue.</p>
+        <p><strong>3. Destroy as many targets as possible</strong><br>
+        Smash the geo-targets fast and accurately.</p>
 
-                <p><strong>2. Choose your special ability</strong><br>
-                Each character will have different power, speed and cooldown.</p>
+        <p><strong>4. Watch the timer</strong><br>
+        You only have 60 seconds. Every second counts.</p>
 
-                <p><strong>3. Destroy as many targets as possible</strong><br>
-                Smash the geo-targets fast and accurately.</p>
+        <p><strong>5. Avoid penalties</strong><br>
+        Missing or hitting wrong locations reduces your final score.</p>
 
-                <p><strong>4. Watch the timer</strong><br>
-                You only have 60 seconds. Every second counts.</p>
-
-                <p><strong>5. Avoid penalties</strong><br>
-                Missing or hitting wrong spots reduces your score.</p>
-
-                <p><strong>6. Beat the high score</strong><br>
-                Try to become the ultimate Planet Smasher.</p>
-            </div>
-
-            <button class="how-btn" onclick="goBack()">Continue</button>
-        </div>
-
+        <p><strong>6. Beat the high score</strong><br>
+        Try to set a new record and become the ultimate Planet Smasher.</p>
     </div>
 
-<script>
-function goHowToPlay() {
-    document.querySelector("#page-main").classList.remove("active");
-    document.querySelector("#page-howto").classList.add("active");
-}
-
-function goBack() {
-    // ileride karakter ekranına yönlendireceğiz
-    alert("Karakter ekranı sonraki adımda eklenecek!");
-}
-</script>
-
-</body>
-</html>
+    <button class="btn-enter" onclick="showPage('characters')">
+        Continue
+    </button>
+</div>
