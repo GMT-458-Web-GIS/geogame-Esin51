@@ -1,205 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planet's Smash</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planet Smash</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: black;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: black;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        overflow-y: auto;
+    }
 
-        /* SAYFA GÖRSEL GEÇİŞ YÖNETİMİ */
-        .page { display: none; min-height: 100vh; }
-        .active { display: block; }
+    h1 {
+        margin-top: 25px;
+        font-size: 75px;
+        font-family: 'Creepster', cursive;
+        color: #ffe98a;
+        text-shadow: 0 0 25px #ffb400;
+        letter-spacing: 5px;
+    }
 
-        h1 {
-            font-size: 80px;
-            font-family: 'Creepster', cursive;
-            letter-spacing: 5px;
-            color: #ffe98a;
-            text-shadow: 0 0 20px #ffb400;
-            margin-top: 25px;
-            text-align: center;
-        }
+    /* SAYFALAR */
+    .page { display: none; }
+    .active { display: block; }
 
-        /* Giriş alanı */
-        .center-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-        }
+    /* Giriş ekranı */
+    .center-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 
-        /* Dünya animasyonu */
-        @keyframes slowBounce { 
-            0% { transform: translateY(0); } 
-            50% { transform: translateY(15px); } 
-            100% { transform: translateY(0); } 
-        }
+    @keyframes slowBounce {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(15px); }
+        100% { transform: translateY(0); }
+    }
 
-        @keyframes glowPulse { 
-            0% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); } 
-            50% { filter: drop-shadow(0 0 35px rgba(0,170,255,0.9)); } 
-            100% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
-        }
+    @keyframes glowPulse {
+        0% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
+        50% { filter: drop-shadow(0 0 35px rgba(0,170,255,0.9)); }
+        100% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
+    }
 
-        .planet-img {
-            width: 420px;
-            animation:
-                slowBounce 4s ease-in-out infinite,
-                glowPulse 3s ease-in-out infinite;
-        }
+    .planet-img {
+        width: 420px;
+        animation: slowBounce 4s infinite ease-in-out,
+                   glowPulse 3s infinite ease-in-out;
+    }
 
-        /* PEMBE GİRİŞ KUTUSU */
-        .neon-box {
-            margin-top: 20px;
-            padding: 25px;
-            border-radius: 15px;
-            width: 350px;
-            background: rgba(0,0,0,0.4);
+    .neon-box {
+        margin-top: 20px;
+        padding: 25px;
+        border-radius: 15px;
+        width: 350px;
+        background: rgba(0,0,0,0.4);
+        border: 2px solid #38b8ff;
+        box-shadow: 0 0 10px #38b8ff, 0 0 25px #38b8ff, inset 0 0 15px #38b8ff;
+    }
 
-            border: 2px solid #ff3fa8;
-            box-shadow:
-                0 0 10px #ff3fa8,
-                0 0 25px #ff3fa8,
-                inset 0 0 15px #ff3fa8;
+    .pink {
+        border: 2px solid #ff3fa8 !important;
+        box-shadow: 0 0 10px #ff3fa8, 0 0 25px #ff3fa8, inset 0 0 15px #ff3fa8 !important;
+    }
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .input-name, .btn-enter {
+        padding: 12px 20px;
+        font-size: 20px;
+        border-radius: 8px;
+        width: 280px;
+        border: none;
+        margin-bottom: 10px;
+    }
 
-        .input-name,
-        .btn-enter {
-            padding: 12px 20px;
-            font-size: 20px;
-            border-radius: 8px;
-            width: 280px;
-            text-align: center;
-            border: none;
-            margin-bottom: 10px;
-        }
+    .btn-enter:hover { background: #d3d3d3; }
 
-        .btn-enter:hover { background: #d3d3d3; }
+    /* HOW TO PLAY kutusu */
+    .content-box {
+        width: 70%;
+        padding: 40px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 15px;
+        border: 2px solid #38b8ff;
+        margin: auto;
+        margin-top: 20px;
+        box-shadow: 0 0 15px #38b8ff, 0 0 30px #38b8ff, inset 0 0 15px #38b8ff;
+        font-size: 22px;
+        line-height: 1.6;
+    }
 
-        /* HOW TO PLAY KUTUSU */
-        .content-box {
-            width: 75%;
-            max-width: 900px;
-            margin: auto;
-            margin-top: 25px;
-            padding: 40px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 15px;
+    .how-btn, .back-btn {
+        margin-top: 25px;
+        padding: 12px 40px;
+        font-size: 22px;
+        background: white;
+        color: #0b114f;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        border: none;
+        margin-bottom: 10px;
+    }
 
-            border: 2px solid #38b8ff;
-            box-shadow:
-                0 0 15px #38b8ff,
-                0 0 30px #38b8ff,
-                inset 0 0 15px #38b8ff;
+    .back-btn {
+        background: #ff6161;
+        color: white;
+    }
 
-            font-size: 22px;
-            line-height: 1.6;
-        }
+    /* KARAKTER SAYFASI */
+    .characters-container {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+    }
 
-        /* HOW TO PLAY scroll */
-        #page-howto {
-            padding-bottom: 70px;
-        }
+    .char-box {
+        width: 250px;
+        padding: 15px;
+        border-radius: 15px;
+        background: rgba(0,0,0,0.5);
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+    }
 
-        /* Continue butonu */
-        .how-btn {
-            margin-top: 35px;
-            padding: 14px 45px;
-            background: white;
-            color: #0b114f;
-            font-size: 22px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
+    .char-box:hover { transform: scale(1.07); }
 
-        /* GOOD LUCK yazısı */
-        .goodluck {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 45px;
-            color: #5ecbff;
-            text-shadow:
-                0 0 10px #38b8ff,
-                0 0 20px #38b8ff,
-                0 0 30px #38b8ff;
-        }
+    /* Neon renkler */
+    .yellow { border: 3px solid #ffd447; box-shadow: 0 0 15px #ffd447; }
+    .purple { border: 3px solid #b43fff; box-shadow: 0 0 15px #b43fff; }
+    .red    { border: 3px solid #ff3f3f; box-shadow: 0 0 15px #ff3f3f; }
+    .pink2  { border: 3px solid #ff6bd6; box-shadow: 0 0 15px #ff6bd6; }
 
-    </style>
+    .char-img { width: 100%; border-radius: 10px; }
+
+    .char-name {
+        margin-top: 10px;
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    /* Hover özellik kutusu */
+    .char-info {
+        display: none;
+        position: absolute;
+        bottom: -130px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 230px;
+        padding: 12px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.85);
+        font-size: 16px;
+        line-height: 1.4;
+        border: 1px solid white;
+        box-shadow: 0 0 15px white;
+    }
+
+    .char-box:hover .char-info { display: block; }
+</style>
 </head>
 <body>
 
-    <!-- PAGE 1 – GİRİŞ -->
-    <div id="page-main" class="page active">
+<!-- PAGE 1 — GİRİŞ -->
+<div id="page1" class="page active">
+    <h1>PLANET SMASH</h1>
 
-        <h1>PLANET'S SMASH</h1>
+    <div class="center-area">
+        <img src="earth.png" class="planet-img">
 
-        <div class="center-area">
-            <img src="earth.png" class="planet-img" alt="Earth">
+        <div class="neon-box">
+            <input id="playerName" class="input-name pink" placeholder="Enter Your Name">
+            <button class="btn-enter pink" onclick="goPage2()">Continue</button>
+        </div>
+    </div>
+</div>
 
-            <div class="neon-box">
-                <input type="text" class="input-name" placeholder="Enter Your Name" id="playerName">
-                <button class="btn-enter" onclick="goHowToPlay()">Continue</button>
-            </div>
+<!-- PAGE 2 — HOW TO PLAY -->
+<div id="page2" class="page">
+    <h1>HOW TO PLAY?</h1>
+
+    <div class="content-box">
+        <p><strong>1. Enter your name</strong><br>Type your name on the main screen.</p>
+        <p><strong>2. Choose your hero</strong><br>Each hero has different power, speed, cooldown.</p>
+        <p><strong>3. Hit the targets</strong><br>Destroy as many as you can in 60 seconds!</p>
+        <p><strong>4. Avoid penalties</strong><br>Wrong hits reduce your points.</p>
+        <p><strong>5. Become the champion</strong><br>Beat the global high score.</p>
+    </div>
+
+    <button class="back-btn" onclick="goPage1()">Back</button>
+    <button class="how-btn" onclick="goPage3()">Continue</button>
+</div>
+
+<!-- PAGE 3 — KARAKTER SEÇİMİ -->
+<div id="page3" class="page">
+    <h1>CHOOSE YOUR HERO</h1>
+
+    <div class="characters-container">
+
+        <!-- CERES -->
+        <div class="char-box yellow">
+            <img src="ceres.png" class="char-img">
+            <div class="char-name">CERES</div>
+            <div class="char-info">Power: ★★★★☆<br>Speed: ★★★☆☆<br>Cooldown: Low</div>
+        </div>
+
+        <!-- JUNO -->
+        <div class="char-box purple">
+            <img src="juno.png" class="char-img">
+            <div class="char-name">JUNO</div>
+            <div class="char-info">Power: ★★☆☆☆<br>Speed: ★★★★★<br>Cooldown: Ultra Low</div>
+        </div>
+
+        <!-- MARS -->
+        <div class="char-box red">
+            <img src="mars.png" class="char-img">
+            <div class="char-name">MARS</div>
+            <div class="char-info">Power: ★★★★★<br>Speed: ★★☆☆☆<br>Cooldown: High</div>
+        </div>
+
+        <!-- VENUS -->
+        <div class="char-box pink2">
+            <img src="venus.png" class="char-img">
+            <div class="char-name">VENUS</div>
+            <div class="char-info">Power: ★★★☆☆<br>Speed: ★★★★☆<br>Cooldown: Medium</div>
         </div>
 
     </div>
 
-    <!-- PAGE 2 – HOW TO PLAY -->
-    <div id="page-howto" class="page">
-
-        <h1>HOW TO PLAY?</h1>
-
-        <div class="content-box">
-            <p><strong>1. Enter your name</strong><br>
-            Type your name on the main screen and press Continue.</p>
-
-            <p><strong>2. Choose your special ability</strong><br>
-            Each character will have different power, speed and cooldown.</p>
-
-            <p><strong>3. Destroy as many targets as possible</strong><br>
-            Smash the geo-targets fast and accurately.</p>
-
-            <p><strong>4. Watch the timer</strong><br>
-            You only have 60 seconds. Every second counts.</p>
-
-            <p><strong>5. Avoid penalties</strong><br>
-            Missing or hitting wrong spots reduces your score.</p>
-
-            <p><strong>6. Beat the high score</strong><br>
-            Try to become the ultimate Planet Smasher.</p>
-        </div>
-
-        <div class="goodluck">GOOD LUCK!</div>
-
-        <button class="how-btn">Continue</button>
-
-    </div>
+    <button class="back-btn" onclick="goPage2()">Back</button>
+</div>
 
 <script>
+    function goPage1(){ show(1); }
+    function goPage2(){ show(2); }
+    function goPage3(){ show(3); }
 
-function goHowToPlay() {
-    document.querySelector("#page-main").classList.remove("active");
-    document.querySelector("#page-howto").classList.add("active");
-}
-
+    function show(n){
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.querySelector("#page" + n).classList.add("active");
+    }
 </script>
 
 </body>
