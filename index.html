@@ -14,18 +14,27 @@
             padding: 0;
             background: black;
             color: white;
-            text-align: center;
             font-family: Arial, sans-serif;
             overflow: hidden;
+            text-align: center;
         }
 
         h1 {
-            margin-top: 60px;
+            margin-top: 40px;
             font-size: 80px;
             font-family: 'Creepster', cursive;
             letter-spacing: 5px;
             color: #ffe98a;
             text-shadow: 0 0 20px #ffb400;
+        }
+
+        /* Container her şeyi ortalar */
+        .center-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* yatayda ortalama */
+            justify-content: center; /* dikeyde ortalama */
+            margin-top: 20px;
         }
 
         /* Dünya zıplama animasyonu */
@@ -35,29 +44,27 @@
             100% { transform: translateY(0); }
         }
 
-        /* Glow nefes alma animasyonu */
+        /* Glow animasyonu */
         @keyframes glowPulse {
-            0% { filter: drop-shadow(0 0 15px rgba(0, 150, 255, 0.4)); }
-            50% { filter: drop-shadow(0 0 35px rgba(0, 170, 255, 0.9)); }
-            100% { filter: drop-shadow(0 0 15px rgba(0, 150, 255, 0.4)); }
+            0% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
+            50% { filter: drop-shadow(0 0 35px rgba(0,170,255,0.9)); }
+            100% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
         }
 
         .planet-img {
-            margin-top: 40px;
             width: 420px;
             height: auto;
-            animation: 
+            animation:
                 slowBounce 4s ease-in-out infinite,
                 glowPulse 3s ease-in-out infinite;
         }
 
         .input-name {
-            margin-top: 25px;
+            margin-top: 20px;
             padding: 12px 20px;
             font-size: 20px;
             border: none;
             border-radius: 8px;
-            outline: none;
             width: 260px;
             text-align: center;
             color: #0b114f;
@@ -65,7 +72,7 @@
 
         .btn-enter {
             margin-top: 15px;
-            padding: 12px 30px;
+            padding: 12px 35px;
             font-size: 20px;
             border: none;
             border-radius: 8px;
@@ -78,16 +85,19 @@
         .btn-enter:hover {
             background: #d3d3d3;
         }
+
     </style>
 </head>
 <body>
 
     <h1>PLANET SMASH</h1>
 
-    <img src="earth.png" class="planet-img" alt="Earth">
+    <div class="center-box">
+        <img src="earth.png" class="planet-img" alt="Earth">
 
-    <input type="text" class="input-name" placeholder="Enter Your Name">
-    <button class="btn-enter">Continue</button>
+        <input type="text" class="input-name" placeholder="Enter Your Name">
+        <button class="btn-enter">Continue</button>
+    </div>
 
 </body>
 </html>
