@@ -5,389 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planet's Smash</title>
 
-    <!-- Title font -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet" />
-    <!-- Character name font -->
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600;6..96,700&display=swap" rel="stylesheet" />
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&display=swap" rel="stylesheet"/>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background: black;
-            color: white;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-
-        /* STARFIELD CANVAS (sadece ana sayfada gösterilecek) */
-        #starfield {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* SAYFA GÖSTER/GİZLE */
-        .page {
-            display: none;
-            position: relative;
-            z-index: 1; /* canvas'ın üstünde */
-            padding-bottom: 60px;
-            min-height: 100vh;
-        }
-
-        .active {
-            display: block;
-        }
-
-        h1 {
-            margin-top: 25px;
-            font-size: 75px;
-            font-family: 'Creepster', cursive;
-            color: #ffe98a;
-            text-shadow: 0 0 25px #ffb400;
-            letter-spacing: 5px;
-        }
-
-        /* ANA SAYFA */
-        .center-area {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @keyframes slowBounce {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(15px); }
-            100% { transform: translateY(0); }
-        }
-
-        @keyframes glowPulse {
-            0% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
-            50% { filter: drop-shadow(0 0 40px rgba(0,170,255,1)); }
-            100% { filter: drop-shadow(0 0 15px rgba(0,150,255,0.4)); }
-        }
-
-        .planet-img {
-            width: 420px;
-            max-width: 80vw;
-            animation:
-                slowBounce 4s ease-in-out infinite,
-                glowPulse 3s ease-in-out infinite;
-        }
-
-        .neon-box {
-            margin-top: 20px;
-            padding: 25px;
-            border-radius: 15px;
-            width: 350px;
-            max-width: 90vw;
-            background: rgba(0,0,0,0.55);
-            border: 2px solid #ff3fa8;
-            box-shadow:
-                0 0 10px #ff3fa8,
-                0 0 25px #ff3fa8,
-                inset 0 0 15px #ff3fa8;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .input-name,
-        .btn-main {
-            padding: 12px 20px;
-            font-size: 20px;
-            border-radius: 8px;
-            width: 280px;
-            max-width: 100%;
-            border: none;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .btn-main {
-            cursor: pointer;
-            background: white;
-            color: #0b114f;
-            font-weight: bold;
-        }
-
-        .btn-main:hover {
-            background: #d3d3d3;
-        }
-
-        /* HOW TO PLAY SAYFASI */
-        .content-box {
-            width: 75%;
-            max-width: 900px;
-            margin: 25px auto 10px;
-            padding: 40px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 15px;
-            border: 2px solid #38b8ff;
-            box-shadow:
-                0 0 15px #38b8ff,
-                0 0 30px #38b8ff,
-                inset 0 0 15px #38b8ff;
-            font-size: 22px;
-            line-height: 1.6;
-            text-align: left;
-        }
-
-        .goodluck {
-            margin-top: 25px;
-            font-size: 40px;
-            color: #5ecbff;
-            text-shadow:
-                0 0 10px #38b8ff,
-                0 0 20px #38b8ff,
-                0 0 30px #38b8ff;
-        }
-
-        .btn-row {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-secondary,
-        .btn-primary {
-            padding: 12px 35px;
-            font-size: 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-secondary {
-            background: #ff7070;
-            color: #fff;
-        }
-
-        .btn-secondary:hover {
-            background: #ff4b4b;
-        }
-
-        .btn-primary {
-            background: #ffffff;
-            color: #0b114f;
-        }
-
-        .btn-primary:hover {
-            background: #d3d3d3;
-        }
-
-        /* KARAKTER SAYFASI GENEL */
-        .characters-container {
-            margin: 35px auto 0;
-            padding: 0 5vw;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
-        /* Karakter kartı */
-        .char-box {
-            position: relative;
-            width: 260px;
-            max-width: 90vw;
-            padding: 18px 18px 16px;
-            border-radius: 18px;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(3px);
-            cursor: pointer;
-            transition:
-                transform 0.25s ease,
-                box-shadow 0.25s ease,
-                outline 0.25s ease;
-            overflow: visible;
-        }
-
-        .char-box:hover {
-            transform: scale(1.06) translateY(-4px);
-        }
-
-        .char-box.selected {
-            outline: 3px solid #ffffff;
-            box-shadow:
-                0 0 18px #ffffff,
-                0 0 35px #ffffff,
-                inset 0 0 10px #ffffff;
-        }
-
-        .char-img {
-            width: 200px;
-            height: auto;
-            border-radius: 12px;
-            display: block;
-            margin: 0 auto 12px;
-        }
-
-        .char-name {
-            font-family: 'Bodoni Moda', serif;
-            font-size: 30px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: #ffffff;
-            margin-top: 4px;
-            text-align: center;
-            transition: 0.3s ease;
-        }
-
-        .char-box:hover .char-name {
-            color: #ffe6a7;
-            text-shadow:
-                0 0 10px #ffd27f,
-                0 0 20px #ffbb55;
-        }
-
-        /* Üste çıkan bilgi baloncuğu */
-        .char-info-bubble {
-            position: absolute;
-            left: 50%;
-            top: -145px;
-            transform: translateX(-50%);
-            width: 260px;
-            max-width: 90vw;
-            padding: 12px 14px;
-            background: rgba(5,5,10,0.96);
-            border-radius: 14px;
-            border: 1px solid #38b8ff;
-            box-shadow:
-                0 0 12px #38b8ff,
-                0 0 25px #38b8ff;
-            font-size: 13px;
-            line-height: 1.4;
-            text-align: left;
-            opacity: 0;
-            pointer-events: none;
-            transform-origin: bottom center;
-            transform: translateX(-50%) translateY(10px) scale(0.9);
-            transition:
-                opacity 0.25s ease,
-                transform 0.25s ease;
-            z-index: 5;
-        }
-
-        .char-info-bubble::after {
-            content: "";
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 8px 8px 0 8px;
-            border-style: solid;
-            border-color: rgba(5,5,10,0.96) transparent transparent transparent;
-        }
-
-        .char-box:hover .char-info-bubble {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0) scale(1);
-        }
-
-        .char-info-title {
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #ffffff;
-        }
-
-        .stat-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 4px;
-        }
-
-        .stat-row span {
-            width: 70px;
-            font-size: 12px;
-            color: #c8e6ff;
-        }
-
-        .stat-bar {
-            flex: 1;
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.12);
-            overflow: hidden;
-        }
-
-        .stat-fill {
-            height: 100%;
-            width: calc(var(--fill, 0.5) * 100%);
-            border-radius: 999px;
-            background: linear-gradient(90deg, #38b8ff, #00ffd9);
-        }
-
-        .char-desc {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #dfefff;
-            font-style: italic;
-        }
-
-        /* Neon renk çerçeveleri */
-        .yellow {
-            border: 3px solid #ffd447;
-            box-shadow:
-                0 0 12px #ffd447,
-                0 0 25px #ffd447,
-                inset 0 0 12px #ffd447;
-        }
-        .purple {
-            border: 3px solid #b43fff;
-            box-shadow:
-                0 0 12px #b43fff,
-                0 0 25px #b43fff,
-                inset 0 0 12px #b43fff;
-        }
-        .red {
-            border: 3px solid #ff3b3b;
-            box-shadow:
-                0 0 12px #ff3b3b,
-                0 0 25px #ff3b3b,
-                inset 0 0 12px #ff3b3b;
-        }
-        .pink {
-            border: 3px solid #ff6bd6;
-            box-shadow:
-                0 0 12px #ff6bd6,
-                0 0 25px #ff6bd6,
-                inset 0 0 12px #ff6bd6;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 52px;
-            }
-
-            .content-box {
-                width: 90%;
-                padding: 25px;
-                font-size: 18px;
-            }
-
-            .goodluck {
-                font-size: 30px;
-            }
-        }
-    </style>
+    <!-- STYLES -->
+    <link rel="stylesheet" href="assets/style.css" />
 </head>
+
 <body>
 
+<!-- STARFIELD CANVAS -->
 <canvas id="starfield"></canvas>
 
 <!-- PAGE 1: MAIN -->
@@ -398,12 +26,7 @@
         <img src="earth.png" alt="Exploding Earth" class="planet-img" />
 
         <div class="neon-box">
-            <input
-                type="text"
-                id="playerName"
-                class="input-name"
-                placeholder="Enter Your Name"
-            />
+            <input type="text" id="playerName" class="input-name" placeholder="Enter Your Name"/>
             <button class="btn-main" onclick="goHowToPlay()">Continue</button>
         </div>
     </div>
@@ -414,23 +37,12 @@
     <h1>HOW TO PLAY?</h1>
 
     <div class="content-box">
-        <p><strong>1. Enter your name</strong><br>
-        Type your player name on the main screen and press Continue.</p>
-
-        <p><strong>2. Choose your hero</strong><br>
-        Pick one of the four heroes. Each has different power, speed and cooldown.</p>
-
-        <p><strong>3. Destroy as many targets as possible</strong><br>
-        Smash the geo-targets on the map as fast and as accurately as you can.</p>
-
-        <p><strong>4. Watch the timer</strong><br>
-        You only have 60 seconds. Every second matters.</p>
-
-        <p><strong>5. Avoid penalties</strong><br>
-        Missing or hitting wrong locations will reduce your score.</p>
-
-        <p><strong>6. Beat the high score</strong><br>
-        Try to set a new record and become the ultimate Planet Smasher.</p>
+        <p><strong>1. Enter your name</strong><br>Type your name on the main screen and press Continue.</p>
+        <p><strong>2. Choose your hero</strong><br>Pick one of the four heroes. Each has different stats.</p>
+        <p><strong>3. Destroy targets</strong><br>Smash as fast and accurately as possible.</p>
+        <p><strong>4. Watch the timer</strong><br>You have only 60 seconds.</p>
+        <p><strong>5. Avoid penalties</strong><br>Miss hits reduce your score.</p>
+        <p><strong>6. Beat the high score</strong><br>Become the ultimate smasher.</p>
     </div>
 
     <div class="goodluck">GOOD LUCK!</div>
@@ -446,145 +58,59 @@
     <h1>CHOOSE YOUR HERO</h1>
 
     <div class="characters-container">
-        <!-- CERES -->
+
         <div class="char-box yellow" data-hero="Ceres">
-            <img src="characters/ceres.png" alt="Ceres" class="char-img" />
+            <img src="characters/ceres.png" class="char-img"/>
             <div class="char-name">CERES</div>
 
             <div class="char-info-bubble">
                 <div class="char-info-title">Solar Guardian</div>
-
-                <div class="stat-row">
-                    <span>Power</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.85;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Speed</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.6;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Cooldown</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.3;"></div>
-                    </div>
-                </div>
-
-                <p class="char-desc">
-                    Throws burning spears from orbit and pierces clustered targets.
-                </p>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.85"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.60"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.30"></div></div></div>
+                <p class="char-desc">Burning solar spears from orbit.</p>
             </div>
         </div>
 
-        <!-- JUNO -->
         <div class="char-box purple" data-hero="Juno">
-            <img src="characters/juno.png" alt="Juno" class="char-img" />
+            <img src="characters/juno.png" class="char-img"/>
             <div class="char-name">JUNO</div>
 
             <div class="char-info-bubble">
                 <div class="char-info-title">Shadow Runner</div>
-
-                <div class="stat-row">
-                    <span>Power</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.45;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Speed</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 1;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Cooldown</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.2;"></div>
-                    </div>
-                </div>
-
-                <p class="char-desc">
-                    Teleports between targets and chains quick precision hits.
-                </p>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.45"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:1.00"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.20"></div></div></div>
+                <p class="char-desc">Teleports between targets.</p>
             </div>
         </div>
 
-        <!-- MARS -->
         <div class="char-box red" data-hero="Mars">
-            <img src="characters/mars.png" alt="Mars" class="char-img" />
+            <img src="characters/mars.png" class="char-img"/>
             <div class="char-name">MARS</div>
 
             <div class="char-info-bubble">
                 <div class="char-info-title">Planet Brawler</div>
-
-                <div class="stat-row">
-                    <span>Power</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 1;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Speed</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.4;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Cooldown</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.7;"></div>
-                    </div>
-                </div>
-
-                <p class="char-desc">
-                    Heavy, explosive punches that wipe out a small area in one hit.
-                </p>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:1"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.40"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
+                <p class="char-desc">Explosive punches.</p>
             </div>
         </div>
 
-        <!-- VENUS -->
         <div class="char-box pink" data-hero="Venus">
-            <img src="characters/venus.png" alt="Venus" class="char-img" />
+            <img src="characters/venus.png" class="char-img"/>
             <div class="char-name">VENUS</div>
 
             <div class="char-info-bubble">
                 <div class="char-info-title">Orbital Muse</div>
-
-                <div class="stat-row">
-                    <span>Power</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.7;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Speed</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.8;"></div>
-                    </div>
-                </div>
-
-                <div class="stat-row">
-                    <span>Cooldown</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="--fill: 0.5;"></div>
-                    </div>
-                </div>
-
-                <p class="char-desc">
-                    Elegant energy waves that bounce between nearby targets.
-                </p>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.80"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.50"></div></div></div>
+                <p class="char-desc">Elegant chain energy waves.</p>
             </div>
         </div>
+
     </div>
 
     <div class="btn-row">
@@ -593,172 +119,11 @@
     </div>
 </div>
 
-<!-- İstersen ses dosyası eklersin (select.mp3) -->
-<audio id="select-sfx" src="select.mp3" preload="auto"></audio>
+<!-- SOUND -->
+<audio id="select-sfx" src="assets/select.mp3" preload="auto"></audio>
 
-<script>
-    /* ---------- SAYFA GEÇİŞLERİ ---------- */
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-
-        // starfield sadece ana sayfada görünsün
-        const starCanvas = document.getElementById('starfield');
-        if (id === 'page-main') {
-            starCanvas.style.display = 'block';
-        } else {
-            starCanvas.style.display = 'none';
-        }
-    }
-
-    function goHowToPlay() {
-        const name = document.getElementById('playerName').value.trim();
-        if (!name) {
-            alert('Please enter your name first.');
-            return;
-        }
-        showPage('page-howto');
-    }
-
-    let selectedHero = null;
-    const selectSfx = document.getElementById('select-sfx');
-
-    // Karakter seçimi
-    document.addEventListener('click', (e) => {
-        const box = e.target.closest('.char-box');
-        if (!box) return;
-
-        document.querySelectorAll('.char-box').forEach(b => b.classList.remove('selected'));
-        box.classList.add('selected');
-        selectedHero = box.dataset.hero;
-
-        if (selectSfx) {
-            selectSfx.currentTime = 0;
-            selectSfx.play().catch(() => {});
-        }
-    });
-
-    function confirmHero() {
-        if (!selectedHero) {
-            alert('Please select a hero first!');
-            return;
-        }
-        alert('Hero selected: ' + selectedHero + '\nGame screen will be implemented next 👀');
-    }
-
-    /* ---------- STARFIELD + KAYAN YILDIZLAR (A + D mix) ---------- */
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
-
-    let stars = [];
-    let shootingStars = [];
-    let lastTime = 0;
-
-    function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width  = window.innerWidth  * dpr;
-        canvas.height = window.innerHeight * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    function createStars(count) {
-        stars = [];
-        for (let i = 0; i < count; i++) {
-            stars.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                speed: 40 + Math.random() * 80,
-                size: Math.random() * 2 + 0.5
-            });
-        }
-    }
-
-    function createShootingStar() {
-        const fromTop = Math.random() < 0.5;
-        const startX = Math.random() * canvas.width;
-        const startY = fromTop ? -50 : Math.random() * canvas.height * 0.4;
-        shootingStars.push({
-            x: startX,
-            y: startY,
-            vx: -200 - Math.random() * 200,
-            vy: 200 + Math.random() * 200,
-            length: 200 + Math.random() * 200,
-            life: 0,
-            maxLife: 1.2 + Math.random() * 0.8
-        });
-    }
-
-    createStars(250);
-
-    let shootingTimer = 0;
-    let nextShooting = 1.5 + Math.random() * 2.5;
-
-    function updateStarfield(timestamp) {
-        if (!lastTime) lastTime = timestamp;
-        const dt = (timestamp - lastTime) / 1000;
-        lastTime = timestamp;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Normal yıldızlar
-        ctx.fillStyle = 'white';
-        for (const s of stars) {
-            s.y += s.speed * dt;
-            if (s.y > canvas.height) {
-                s.y = -5;
-                s.x = Math.random() * canvas.width;
-            }
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Shooting star spawn
-        shootingTimer += dt;
-        if (shootingTimer > nextShooting) {
-            createShootingStar();
-            shootingTimer = 0;
-            nextShooting = 1.5 + Math.random() * 3;
-        }
-
-        // Shooting stars çiz
-        for (let i = shootingStars.length - 1; i >= 0; i--) {
-            const sh = shootingStars[i];
-            sh.life += dt;
-            if (sh.life > sh.maxLife) {
-                shootingStars.splice(i, 1);
-                continue;
-            }
-
-            sh.x += sh.vx * dt;
-            sh.y += sh.vy * dt;
-
-            const progress = 1 - sh.life / sh.maxLife;
-            const alpha = Math.max(progress, 0);
-
-            const endX = sh.x + (sh.vx / Math.hypot(sh.vx, sh.vy)) * sh.length;
-            const endY = sh.y + (sh.vy / Math.hypot(sh.vx, sh.vy)) * sh.length;
-
-            const grad = ctx.createLinearGradient(sh.x, sh.y, endX, endY);
-            grad.addColorStop(0, `rgba(255,255,255,${alpha})`);
-            grad.addColorStop(1, 'rgba(255,255,255,0)');
-
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(sh.x, sh.y);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
-        }
-
-        requestAnimationFrame(updateStarfield);
-    }
-
-    requestAnimationFrame(updateStarfield);
-</script>
+<!-- SCRIPTS -->
+<script src="assets/script.js"></script>
 
 </body>
 </html>
