@@ -1,6 +1,4 @@
-/* ------------------------------
-   GLOBAL
---------------------------------*/
+/* GLOBAL */
 body {
     margin: 0;
     background: black;
@@ -9,9 +7,7 @@ body {
     overflow: hidden;
 }
 
-/* ------------------------------
-   HEALTH BAR
---------------------------------*/
+/* HEALTH BAR */
 #health-bar-container {
     position: fixed;
     top: 0;
@@ -21,7 +17,6 @@ body {
     background: #222;
     z-index: 20;
 }
-
 #health-bar {
     width: 100%;
     height: 100%;
@@ -29,9 +24,7 @@ body {
     transition: width 0.3s, background 0.3s;
 }
 
-/* ------------------------------
-   TOP RIGHT STATUS
---------------------------------*/
+/* TOP RIGHT STATUS */
 #top-right-ui {
     position: fixed;
     top: 15px;
@@ -39,13 +32,11 @@ body {
     text-align: right;
     z-index: 30;
 }
-
 #hero-status {
     font-size: 22px;
     font-weight: bold;
     text-shadow: 0 0 10px #00f6ff;
 }
-
 #hero-icon {
     margin-top: 5px;
     width: 50px;
@@ -54,84 +45,44 @@ body {
     border-radius: 50%;
 }
 
-/* ------------------------------
-   EARTH (CENTER)
---------------------------------*/
-#earth-image {
+/* GLOBE (CENTER) */
+#globe-container {
     position: absolute;
-    top: 32%;                 /* Dünya tam ortada */
+    top: 15%;        /* Dünya soruların üstünde */
     left: 50%;
     transform: translateX(-50%);
-    width: 380px;
-    height: 380px;
-    animation: earthRotate 40s linear infinite; /* Yavaş dönüş */
-    pointer-events: none;
+    width: 580px;
+    height: 580px;
+    z-index: 5;
 }
 
-/* Earth rotation */
-@keyframes earthRotate {
-    from { transform: translateX(-50%) rotate(0deg); }
-    to   { transform: translateX(-50%) rotate(360deg); }
-}
-
-/* Earth hit flash */
-.earth-damage {
-    animation: earthFlash 0.4s;
-}
-
-@keyframes earthFlash {
-    0% { filter: brightness(2) hue-rotate(0deg); }
-    50% { filter: brightness(0.6) hue-rotate(90deg); }
-    100% { filter: brightness(1) hue-rotate(0deg); }
-}
-
-/* ------------------------------
-   HERO (RIGHT SIDE)
---------------------------------*/
+/* HERO (RIGHT SIDE) */
 #hero-image {
     position: absolute;
-    bottom: 35px;            /* yere yakın */
-    right: 60px;             /* sağ içeri */
-    width: 320px;
-    height: auto;
-    filter: drop-shadow(0 0 20px rgba(0,255,255,0.5));
-    transition: 0.2s;
+    bottom: 25px;
+    right: 60px;
+    width: 330px;
+    filter: drop-shadow(0 0 25px rgba(255,120,0,0.6));
+    z-index: 10;
 }
 
-/* Hero shake */
-.hero-damage {
-    animation: heroShake 0.3s;
-}
-
-@keyframes heroShake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-12px); }
-    50% { transform: translateX(12px); }
-    75% { transform: translateX(-8px); }
-    100% { transform: translateX(0); }
-}
-
-/* ------------------------------
-   QUESTION AREA (BOTTOM CENTER)
---------------------------------*/
+/* QUESTION AREA (BOTTOM CENTER) */
 #question-area {
     position: absolute;
-    top: 75%;         /* Dünya altı */
+    top: 73%;     
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
+    width: 100%;
+    z-index: 15;
 }
-
 #question-text {
     font-size: 26px;
     margin-bottom: 20px;
-    color: white;
     text-shadow: 0 0 10px white;
 }
 
-/* ------------------------------
-   ANSWER BUTTONS
---------------------------------*/
+/* ANSWER BUTTONS */
 .answer-btn {
     display: block;
     width: 320px;
@@ -145,8 +96,27 @@ body {
     color: white;
     transition: 0.2s;
 }
-
 .answer-btn:hover {
     transform: scale(1.05);
     background: #00eaff33;
+}
+
+/* DAMAGE FX */
+.earth-damage {
+    animation: earthFlash 0.4s;
+}
+@keyframes earthFlash {
+    0% { filter: brightness(2); }
+    50% { filter: brightness(0.5) hue-rotate(90deg); }
+    100% { filter: brightness(1); }
+}
+.hero-damage {
+    animation: heroShake 0.3s;
+}
+@keyframes heroShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-14px); }
+    50% { transform: translateX(14px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
 }

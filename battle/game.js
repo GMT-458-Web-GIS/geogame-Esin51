@@ -1,6 +1,6 @@
-/* --------------------------------------------------------
-   LOAD HERO & EARTH
--------------------------------------------------------- */
+/* ------------------------------
+   LOAD HERO
+------------------------------ */
 const heroImage = document.getElementById("hero-image");
 const selectedHero = localStorage.getItem("ps_selectedHero") || "Ceres";
 
@@ -13,30 +13,31 @@ const heroImages = {
 
 heroImage.src = heroImages[selectedHero];
 
-const earthImage = document.getElementById("earth-image");
+/* ------------------------------
+   INIT GLOBE.GL
+------------------------------ */
+const world = Globe()(document.getElementById("globe-container"))
+    .globeImageUrl("../earth-big.png")
+    .backgroundColor("black")
+    .showAtmosphere(true)
+    .atmosphereColor("#3af2ff")
+    .atmosphereAltitude(0.25);
 
+/* Hero konumu (saldırının geldiği yer) */
+const heroLat = 10;
+const heroLng = 20;
 
-/* --------------------------------------------------------
-   READ MODE FROM LOCALSTORAGE
--------------------------------------------------------- */
+/* ------------------------------
+   MODE SETTINGS
+------------------------------ */
 const mode = localStorage.getItem("ps_gameMode") || "normal";
 
-let damage = 20;
-let questionDelay = 1200;
+let damage = mode === "easy" ? 10 : mode === "hard" ? 30 : 20;
+let questionDelay = mode === "easy" ? 1600 : mode === "hard" ? 900 : 1200;
 
-if (mode === "easy") {
-    damage = 10;
-    questionDelay = 1600;
-}
-if (mode === "hard") {
-    damage = 30;
-    questionDelay = 900;
-}
-
-
-/* --------------------------------------------------------
-   BASE SETUP
--------------------------------------------------------- */
+/* ------------------------------
+   GAME VARIABLES
+------------------------------ */
 let health = 100;
 
 const questionText = document.getElementById("question-text");
@@ -44,43 +45,65 @@ const answersContainer = document.getElementById("answers-container");
 const healthBar = document.getElementById("health-bar");
 const heroStatus = document.getElementById("hero-status");
 
-
-/* --------------------------------------------------------
-   QUESTIONS (TEMP)
--------------------------------------------------------- */
+/* ------------------------------
+   LOCATION-BASED QUESTIONS
+------------------------------ */
 const questions = [
     {
-        question: "Which planet is closest to the Sun?",
-        answers: ["Venus", "Mercury", "Earth", "Mars"],
-        correct: "Mercury"
+        question: "Where is Turkey's capital located?",
+        answers: ["Ankara", "Istanbul", "Izmir", "Bursa"],
+        correct: "Ankara",
+        lat: 39.93, lng: 32.85
     },
     {
-        question: "What is the capital of Japan?",
-        answers: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
-        correct: "Tokyo"
+        question: "On which continent do penguins primarily live?",
+        answers: ["Asia", "Antarctica", "Europe", "Africa"],
+        correct: "Antarctica",
+        lat: -82, lng: 0
     },
     {
-        question: "Which gas do plants absorb?",
-        answers: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Helium"],
-        correct: "Carbon Dioxide"
+        question: "Where is the Amazon Rainforest?",
+        answers: ["Africa", "Europe", "South America", "Asia"],
+        correct: "South America",
+        lat: -3.4653, lng: -62.2159
     }
 ];
 
+/* ------------------------------
+   FIRE VISUAL EFFECTS
+------------------------------ */
+function fireAt(lat, lng, correct) {
+    world.arcsData([{
+        startLat: heroLat,
+        startLng: heroLng,
+        endLat: lat,
+        endLng: lng,
+        color: correct ? "lime" : "red"
+    }])
+    .arcStroke(2)
+    .arcAltitude(0.25)
+    .arcDuration(2000);
 
-/* --------------------------------------------------------
+    if (!correct) {
+        world.ringsData([{ lat, lng }])
+            .ringColor(() => "red")
+            .ringMaxRadius(5)
+            .ringPropagationSpeed(5);
+    }
+}
+
+/* ------------------------------
    LOAD QUESTION
--------------------------------------------------------- */
+------------------------------ */
 function loadQuestion() {
 
-    if (health <= 0) {
-        endGame(false);
-        return;
-    }
+    if (health <= 0) return endGame(false);
 
     const q = questions[Math.floor(Math.random() * questions.length)];
 
     questionText.textContent = q.question;
     answersContainer.innerHTML = "";
+
     heroStatus.textContent = "Prepare yourself!";
     heroStatus.style.color = "#00eaff";
 
@@ -89,23 +112,23 @@ function loadQuestion() {
         btn.className = "answer-btn";
         btn.textContent = ans;
 
-        btn.onclick = () => checkAnswer(ans === q.correct);
+        btn.onclick = () => checkAnswer(ans === q.correct, q.lat, q.lng);
 
         answersContainer.appendChild(btn);
     });
 }
 
-
-/* --------------------------------------------------------
+/* ------------------------------
    CHECK ANSWER
--------------------------------------------------------- */
-function checkAnswer(isCorrect) {
+------------------------------ */
+function checkAnswer(isCorrect, lat, lng) {
+
+    fireAt(lat, lng, isCorrect);
 
     if (isCorrect) {
         heroStatus.textContent = "Nice hit!";
         heroStatus.style.color = "#39ff39";
     }
-
     else {
         health -= damage;
         if (health < 0) health = 0;
@@ -118,11 +141,6 @@ function checkAnswer(isCorrect) {
         heroStatus.textContent = "Wrong! Earth is damaged!";
         heroStatus.style.color = "red";
 
-        // Earth damage animation
-        earthImage.classList.add("earth-damage");
-        setTimeout(() => earthImage.classList.remove("earth-damage"), 400);
-
-        // Hero shake animation
         heroImage.classList.add("hero-damage");
         setTimeout(() => heroImage.classList.remove("hero-damage"), 300);
 
@@ -132,23 +150,17 @@ function checkAnswer(isCorrect) {
         }
     }
 
-    // Next question
     setTimeout(loadQuestion, questionDelay);
 }
 
-
-/* --------------------------------------------------------
-   INIT FIRST QUESTION
--------------------------------------------------------- */
+/* ------------------------------
+   START GAME
+------------------------------ */
 setTimeout(loadQuestion, 1200);
 
-
-/* --------------------------------------------------------
-   GAME END (placeholder)
--------------------------------------------------------- */
+/* ------------------------------
+   GAME END
+------------------------------ */
 function endGame(win) {
     alert(win ? "You win!" : "You lost...");
 }
-
-const earthImage = document.getElementById("earth-image");
-const heroImage = document.getElementById("hero-image");
