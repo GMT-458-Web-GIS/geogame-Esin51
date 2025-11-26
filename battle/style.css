@@ -9,25 +9,28 @@ body {
 
 .hidden { display: none !important; }
 
-/* --- ARKA PLAN (STARFIELD) --- */
+/* --- ARKA PLAN --- */
 #starfield {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -1;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -1; pointer-events: none;
+}
+#dynamic-background {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: -2; background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+    transition: background 1s;
 }
 
 /* --- HP BAR --- */
 #hp-container {
-    position: fixed;
-    top: 20px; left: 50%;
+    position: fixed; top: 20px; left: 50%;
     transform: translateX(-50%);
-    width: 400px; height: 25px;
+    width: 500px; height: 30px;
     background: rgba(20, 20, 20, 0.9);
     border: 2px solid #555;
     border-radius: 15px;
-    z-index: 20;
+    z-index: 50;
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(0,0,0,0.8);
 }
 #hp-bar {
     width: 100%; height: 100%;
@@ -36,132 +39,151 @@ body {
 }
 #hp-text {
     position: absolute; width: 100%; text-align: center;
-    top: 2px; font-size: 16px; font-weight: bold;
-    text-shadow: 1px 1px 2px black; letter-spacing: 1px;
+    top: 4px; font-size: 18px; font-weight: bold;
+    text-shadow: 1px 1px 2px black; letter-spacing: 2px;
 }
 
 /* --- DÜNYA (ORTADA) --- */
 #globe-container {
     position: absolute;
-    top: 40%; 
-    left: 40%; /* Hero sağda olduğu için dünyayı biraz sola çektik */
+    top: 45%; 
+    left: 40%; /* Hero sağda olduğu için dünyayı biraz sola kaydırdık */
     transform: translate(-50%, -50%);
-    z-index: 5;
+    z-index: 10;
 }
 
-/* --- HERO (SAĞDA BÜYÜK) --- */
+/* --- HERO DISPLAY (SAĞ TARAF) --- */
 #hero-display {
     position: fixed;
     bottom: 0;
-    right: 5%; /* Sağdan %5 içeride */
-    height: 70vh; /* Ekranın %70'i kadar büyük */
-    z-index: 10;
+    right: 0;
+    height: 85vh; /* Ekranın %85'ini kaplasın */
+    width: 400px;
+    z-index: 20;
     display: flex;
     flex-direction: column;
     align-items: center;
-    pointer-events: none; /* Tıklamayı engelleme */
+    justify-content: flex-end;
+    pointer-events: none;
 }
 
 #hero-img {
     height: 100%;
+    max-width: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(0,0,0,0.8));
+    filter: drop-shadow(-10px 0 20px rgba(0,0,0,0.7));
     transition: transform 0.2s;
 }
 
 #hero-bubble {
     position: absolute;
-    top: 10%;
-    right: 80%; /* Resmin solunda konuşsun */
-    background: rgba(0, 0, 0, 0.85);
+    top: 20%;
+    right: 70%; /* Hero'nun sol tarafında dursun */
+    background: rgba(10, 20, 30, 0.9);
     border: 2px solid #00eaff;
+    color: #00eaff;
     padding: 15px;
     border-radius: 15px 15px 0 15px;
-    width: 200px;
-    color: #00eaff;
-    font-size: 1.1rem;
-    text-shadow: 0 0 5px #00eaff;
-    opacity: 0; /* JS ile görünecek */
+    width: 220px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px cyan;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+    opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.3s, transform 0.3s;
+    transition: all 0.3s ease;
 }
-#hero-bubble.visible {
-    opacity: 1;
-    transform: translateY(0);
+#hero-bubble.visible { opacity: 1; transform: translateY(0); }
+
+/* --- TIMER (Hero'nun yanında) --- */
+#timer-ring {
+    position: absolute;
+    top: 5%;
+    right: 80%; /* Balonun üstünde */
+    width: 80px; height: 80px;
+}
+.progress-ring__circle {
+    transition: stroke-dashoffset 1s linear;
+    transform: rotate(-90deg); transform-origin: 50% 50%;
+    stroke: #ffeb3b; filter: drop-shadow(0 0 5px orange);
+}
+#timer-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px; font-weight: bold; color: white;
+    font-family: 'Orbitron';
 }
 
-/* --- SARSINTI EFEKTLERİ --- */
+/* --- SAVAŞ UI (SORULAR) --- */
+#battle-ui {
+    position: fixed;
+    bottom: 30px;
+    left: 40%; /* Dünya ile hizalı */
+    transform: translateX(-50%);
+    width: 650px;
+    z-index: 30;
+    text-align: center;
+}
+
+#question-box {
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+}
+#question-text { margin: 0; font-size: 1.6rem; color: white; }
+
+#answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.answer-btn {
+    background: rgba(30, 30, 40, 0.9);
+    border: 2px solid #444;
+    color: white;
+    padding: 20px;
+    font-size: 1.2rem;
+    font-family: 'Rajdhani'; font-weight: bold;
+    cursor: pointer; border-radius: 8px;
+    transition: all 0.2s;
+}
+.answer-btn:hover { background: #00eaff; color: black; border-color: #00eaff; transform: scale(1.02); }
+.answer-btn.correct { background: #39ff39; color: black; border-color: #39ff39; box-shadow: 0 0 20px #39ff39; }
+.answer-btn.wrong { background: red; color: white; border-color: red; animation: shakeScreen 0.4s; }
+
+/* --- EFEKTLER --- */
 .shake-hero { animation: shakeHero 0.5s; }
 @keyframes shakeHero {
     0% { transform: translateX(0); }
-    25% { transform: translateX(-20px) rotate(-5deg); filter: brightness(0.5) sepia(1) hue-rotate(-50deg) saturate(5); } /* Hasar rengi */
-    50% { transform: translateX(20px) rotate(5deg); }
-    75% { transform: translateX(-20px); }
+    25% { transform: translateX(-15px) rotate(-5deg); filter: sepia(1) hue-rotate(-50deg) saturate(3); }
+    50% { transform: translateX(15px) rotate(5deg); }
+    75% { transform: translateX(-15px); }
     100% { transform: translateX(0); filter: none; }
 }
 
 .shake-screen { animation: shakeScreen 0.5s; }
 @keyframes shakeScreen {
     0% { transform: translate(0,0); }
-    20% { transform: translate(-10px, 10px); }
-    40% { transform: translate(10px, -10px); }
-    60% { transform: translate(-10px, -10px); }
-    80% { transform: translate(10px, 10px); }
+    20% { transform: translate(-8px, 8px); }
+    40% { transform: translate(8px, -8px); }
+    60% { transform: translate(-8px, -8px); }
+    80% { transform: translate(8px, 8px); }
     100% { transform: translate(0,0); }
 }
 
-/* --- SORU ALANI (ALTTA) --- */
-#battle-ui {
-    position: fixed;
-    bottom: 30px;
-    left: 40%; /* Dünya ile hizalı */
-    transform: translateX(-50%);
-    width: 600px;
-    z-index: 20;
-    text-align: center;
-}
-
-#question-box {
-    background: rgba(10, 10, 20, 0.9);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
-}
-#question-text { margin: 0; font-size: 1.4rem; color: white; }
-
-#answers-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-.answer-btn {
-    background: rgba(30, 30, 40, 0.9);
-    border: 2px solid #555;
-    color: white;
-    padding: 15px;
-    font-size: 1.1rem;
-    font-family: 'Rajdhani';
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-.answer-btn:hover { background: #00eaff; color: black; border-color: #00eaff; }
-.answer-btn.correct { background: #39ff39; color: black; border-color: #39ff39; box-shadow: 0 0 15px #39ff39; }
-.answer-btn.wrong { background: red; color: white; border-color: red; animation: shakeScreen 0.3s; }
-
 /* --- GAME OVER --- */
-#game-over-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+#final-screen {
+    position: fixed; inset: 0;
     background: rgba(0,0,0,0.95);
     z-index: 100;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.back-btn {
+#final-title { font-family: 'Orbitron'; font-size: 4rem; margin-bottom: 20px; }
+#final-score-box { font-size: 2rem; color: #ffeb3b; margin-bottom: 20px; }
+#final-hero-msg { font-size: 1.5rem; color: #ccc; margin-bottom: 40px; font-style: italic; }
+.final-buttons button {
     background: transparent; border: 2px solid white; color: white;
     padding: 15px 40px; font-size: 1.5rem; margin: 10px; cursor: pointer;
-    font-family: 'Orbitron';
+    font-family: 'Orbitron'; transition: 0.3s;
 }
-.back-btn:hover { background: white; color: black; }
+.final-buttons button:hover { background: white; color: black; box-shadow: 0 0 20px white; }
