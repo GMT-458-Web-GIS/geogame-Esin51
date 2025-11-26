@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planet Smash – Battle</title>
 
-    <!-- Globe.gl -->
-    <script src="https://unpkg.com/globe.gl"></script>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
-    <!-- HEALTH BAR (TOP) -->
+    <!-- YILDIZLI ARKA PLAN -->
+    <canvas id="starfield"></canvas>
+
+    <!-- CAN BAR -->
     <div id="health-bar-container">
         <div id="health-bar"></div>
     </div>
 
-    <!-- HERO STATUS (TOP RIGHT) -->
-    <div id="top-right-ui">
-        <div id="hero-status">Prepare yourself!</div>
-        <div id="hero-icon"></div>
-    </div>
+    <!-- KAHRAMAN (SAĞ ALT) -->
+    <img id="hero-image" src="" alt="Hero" />
 
-    <!-- GLOBE (CENTER) -->
+    <!-- GLOBE.GL DÜNYA (ORTA) -->
     <div id="globe-container"></div>
 
-    <!-- HERO (RIGHT SIDE) -->
-    <img id="hero-image" src="" alt="Hero">
-
-    <!-- QUESTION AREA (BOTTOM) -->
+    <!-- SORU + CEVAPLAR (ALT ORTA) -->
     <div id="question-area">
+        <div id="hero-status">Prepare yourself...</div>
         <p id="question-text">Loading question...</p>
         <div id="answers-container"></div>
     </div>
 
-    <!-- GAME LOGIC -->
+    <!-- globe.gl kütüphanesi -->
+    <script src="https://unpkg.com/globe.gl"></script>
+    <!-- Oyun scripti -->
     <script src="game.js"></script>
-
 </body>
 </html>
