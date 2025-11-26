@@ -149,3 +149,6 @@ setTimeout(loadQuestion, 1200);
 function endGame(win) {
     alert(win ? "You win!" : "You lost...");
 }
+
+const earthImage = document.getElementById("earth-image");
+const heroImage = document.getElementById("hero-image");

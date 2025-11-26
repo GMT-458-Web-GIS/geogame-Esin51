@@ -10,34 +10,30 @@
 
 <body>
 
-    <!-- HEALTH BAR -->
+    <!-- HEALTH BAR (TOP) -->
     <div id="health-bar-container">
         <div id="health-bar"></div>
     </div>
 
-    <!-- PLAYER HERO (sağda) -->
-<div id="hero-panel">
-    <img id="hero-image" src="" alt="Hero">
-</div>
-
-<!-- EARTH (ortada) -->
-<div id="earth-panel">
-    <img id="earth-image" src="../earth.png" alt="Earth">
-</div>
-
-    <!-- HERO + STATUS -->
+    <!-- HERO STATUS (TOP RIGHT) -->
     <div id="top-right-ui">
         <div id="hero-status">Prepare yourself!</div>
         <div id="hero-icon"></div>
     </div>
 
-    <!-- GAME AREA -->
-    <div id="game-area">
-        <p id="question-text">Loading question...</p>
+    <!-- EARTH (CENTER) -->
+    <img id="earth-image" src="../earth.png" alt="Earth">
 
+    <!-- HERO (RIGHT SIDE) -->
+    <img id="hero-image" src="" alt="Hero">
+
+    <!-- QUESTION + ANSWERS (BOTTOM CENTER) -->
+    <div id="question-area">
+        <p id="question-text">Loading question...</p>
         <div id="answers-container"></div>
     </div>
 
+    <!-- GAME SCRIPT -->
     <script src="game.js"></script>
 </body>
 </html>

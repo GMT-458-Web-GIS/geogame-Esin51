@@ -1,3 +1,6 @@
+/* ------------------------------
+   GLOBAL
+--------------------------------*/
 body {
     margin: 0;
     background: black;
@@ -6,7 +9,9 @@ body {
     overflow: hidden;
 }
 
-/* HEALTH BAR */
+/* ------------------------------
+   HEALTH BAR
+--------------------------------*/
 #health-bar-container {
     position: fixed;
     top: 0;
@@ -24,7 +29,9 @@ body {
     transition: width 0.3s, background 0.3s;
 }
 
-/* HERO STATUS */
+/* ------------------------------
+   TOP RIGHT STATUS
+--------------------------------*/
 #top-right-ui {
     position: fixed;
     top: 15px;
@@ -47,63 +54,51 @@ body {
     border-radius: 50%;
 }
 
-/* GAME AREA */
-#game-area {
-    position: fixed;
-    bottom: 40px;
-    width: 100%;
-    text-align: center;
-}
-
-#question-text {
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: white;
-    text-shadow: 0 0 10px white;
-}
-
-/* ANSWER BUTTONS */
-.answer-btn {
-    display: block;
-    width: 300px;
-    margin: 10px auto;
-    padding: 12px;
-    font-size: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #1b1b1b;
-    border: 2px solid #00eaff;
-    color: white;
-    transition: 0.2s;
-}
-
-.answer-btn:hover {
-    transform: scale(1.05);
-    background: #00eaff33;
-}
-
-/* --------------------------
-   HERO PANEL (right side)
--------------------------- */
-#hero-panel {
+/* ------------------------------
+   EARTH (CENTER)
+--------------------------------*/
+#earth-image {
     position: absolute;
-    right: 40px;
-    top: 150px;
-    width: 280px;
-    height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 32%;                 /* Dünya tam ortada */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    height: 380px;
+    animation: earthRotate 40s linear infinite; /* Yavaş dönüş */
     pointer-events: none;
 }
 
+/* Earth rotation */
+@keyframes earthRotate {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to   { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* Earth hit flash */
+.earth-damage {
+    animation: earthFlash 0.4s;
+}
+
+@keyframes earthFlash {
+    0% { filter: brightness(2) hue-rotate(0deg); }
+    50% { filter: brightness(0.6) hue-rotate(90deg); }
+    100% { filter: brightness(1) hue-rotate(0deg); }
+}
+
+/* ------------------------------
+   HERO (RIGHT SIDE)
+--------------------------------*/
 #hero-image {
-    width: 260px;
+    position: absolute;
+    bottom: 35px;            /* yere yakın */
+    right: 60px;             /* sağ içeri */
+    width: 320px;
+    height: auto;
     filter: drop-shadow(0 0 20px rgba(0,255,255,0.5));
     transition: 0.2s;
 }
 
-/* When wrong answer (shake) */
+/* Hero shake */
 .hero-damage {
     animation: heroShake 0.3s;
 }
@@ -116,30 +111,42 @@ body {
     100% { transform: translateX(0); }
 }
 
-/* --------------------------
-   EARTH PANEL (center)
--------------------------- */
-#earth-panel {
+/* ------------------------------
+   QUESTION AREA (BOTTOM CENTER)
+--------------------------------*/
+#question-area {
     position: absolute;
-    top: 200px;
+    top: 75%;         /* Dünya altı */
     left: 50%;
     transform: translateX(-50%);
-    width: 350px;
-    height: 350px;
+    text-align: center;
 }
 
-#earth-image {
-    width: 100%;
-    transition: 0.3s;
+#question-text {
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: white;
+    text-shadow: 0 0 10px white;
 }
 
-/* Earth damage animation */
-.earth-damage {
-    animation: earthFlash 0.4s;
+/* ------------------------------
+   ANSWER BUTTONS
+--------------------------------*/
+.answer-btn {
+    display: block;
+    width: 320px;
+    margin: 10px auto;
+    padding: 14px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #1b1b1b;
+    border: 2px solid #00eaff;
+    color: white;
+    transition: 0.2s;
 }
 
-@keyframes earthFlash {
-    0% { filter: brightness(2) hue-rotate(0deg); }
-    50% { filter: brightness(0.6) hue-rotate(90deg); }
-    100% { filter: brightness(1) hue-rotate(0deg); }
+.answer-btn:hover {
+    transform: scale(1.05);
+    background: #00eaff33;
 }
