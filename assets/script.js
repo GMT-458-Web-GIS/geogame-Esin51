@@ -1,143 +1,97 @@
-/* --------------------------------------------------------
-   PAGE SWITCHING
--------------------------------------------------------- */
 function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 
-    // Starfield only on main page
-    document.getElementById("starfield").style.display =
-        id === "page-main" ? "block" : "none";
+    // starfield sadece main ekranda gözüksün
+    const starCanvas = document.getElementById("starfield");
+    starCanvas.style.display = (id === "page-main") ? "block" : "none";
 }
 
 function goHowToPlay() {
     const name = document.getElementById("playerName").value.trim();
-    if (!name) {
-        alert("Please enter your name first.");
-        return;
-    }
+    if (!name) return alert("Enter your name first!");
     showPage("page-howto");
 }
 
-/* --------------------------------------------------------
-   HERO SELECT
--------------------------------------------------------- */
+/* ----------------------------------------
+   CHARACTER SELECT + WHITE GLOW
+----------------------------------------- */
+
 let selectedHero = null;
-const selectSound = document.getElementById("select-sfx");
+const selectedText = document.getElementById("heroSelectedText");
 
-document.addEventListener("click", (e) => {
-    const box = e.target.closest(".char-box");
-    if (!box) return;
+document.querySelectorAll(".char-box").forEach(box => {
+    box.addEventListener("click", () => {
 
-    document.querySelectorAll(".char-box").forEach(b => b.classList.remove("selected"));
-    box.classList.add("selected");
+        // ses aç
+        const selectSfx = document.getElementById("select-sfx");
+        if (selectSfx) {
+            selectSfx.currentTime = 0;
+            selectSfx.play().catch(()=>{});
+        }
 
-    selectedHero = box.dataset.hero;
+        // diğerlerini kaldır
+        document.querySelectorAll(".char-box").forEach(b => b.classList.remove("selected"));
 
-    if (selectSound) {
-        selectSound.currentTime = 0;
-        selectSound.play().catch(()=>{});
-    }
+        // seç
+        box.classList.add("selected");
+        selectedHero = box.dataset.hero;
+
+        // ekranda yazı göster
+        showSelectedHeroText(selectedHero);
+    });
 });
 
-function confirmHero() {
-    if (!selectedHero) {
-        alert("Please select a hero first.");
-        return;
-    }
+function showSelectedHeroText(name) {
+    selectedText.innerHTML = `${name.toUpperCase()} SELECTED`;
+    selectedText.style.opacity = 1;
+    selectedText.style.transform = "translateX(-50%) translateY(0)";
 
-    alert("Selected: " + selectedHero + "\nGame screen is coming next!");
+    setTimeout(() => {
+        selectedText.style.opacity = 0;
+        selectedText.style.transform = "translateX(-50%) translateY(-10px)";
+    }, 1600);
 }
 
-/* --------------------------------------------------------
-   STARFIELD (A + D Versions Combined)
--------------------------------------------------------- */
+function confirmHero() {
+    if (!selectedHero) return alert("Please select a hero!");
+    alert("Hero locked: " + selectedHero);
+}
+
+/* ----------------------------------------
+   STARFIELD
+----------------------------------------- */
+
 const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
 
+let stars = [];
+let shootingStars = [];
+let lastTime = 0;
+
 function resizeCanvas() {
-    const DPR = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * DPR;
-    canvas.height = window.innerHeight * DPR;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-let stars = [];
-let shooting = [];
-
-function initStars(count = 250) {
+function createStars(count) {
     stars = [];
     for (let i = 0; i < count; i++) {
         stars.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             speed: 40 + Math.random() * 80,
-            size: Math.random() * 2 + .5
-        })
+            size: Math.random() * 2 + 0.5
+        });
     }
 }
-initStars();
+createStars(250);
 
-function newShootingStar() {
-    shooting.push({
-        x: Math.random() * canvas.width,
-        y: -50,
-        vx: -300 - Math.random()*200,
-        vy: 300 + Math.random()*200,
-        life: 0,
-        maxLife: 1 + Math.random()*1.5
-    });
-}
+let shootingTimer = 0;
+let nextShooting = 1.5 + Math.random() * 2.5;
 
-let tOld = 0;
-let timer = 0;
-let nextStar = 1.5;
-
-function loop(t) {
-    let dt = (t - tOld) / 1000;
-    tOld = t;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    ctx.fillStyle = "white";
-    for (let s of stars) {
-        s.y += s.speed * dt;
-        if (s.y > canvas.height) {
-            s.y = -5;
-            s.x = Math.random() * canvas.width;
-        }
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
-        ctx.fill();
-    }
-
-    timer += dt;
-    if (timer > nextStar) {
-        newShootingStar();
-        timer = 0;
-        nextStar = 1 + Math.random()*2.5;
-    }
-
-    for (let i = shooting.length-1; i >= 0; i--) {
-        let sh = shooting[i];
-        sh.life += dt;
-        if (sh.life > sh.maxLife) {
-            shooting.splice(i,1);
-            continue;
-        }
-        sh.x += sh.vx * dt;
-        sh.y += sh.vy * dt;
-
-        let alpha = 1 - sh.life/sh.maxLife;
-        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(sh.x, sh.y);
-        ctx.lineTo(sh.x - sh.vx*0.15, sh.y - sh.vy*0.15);
-        ctx.stroke();
-    }
-
-    requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
+functi

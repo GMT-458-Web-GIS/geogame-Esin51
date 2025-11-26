@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planet's Smash</title>
 
-    <!-- GOOGLE FONTS -->
+    <!-- FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&display=swap" rel="stylesheet"/>
 
-    <!-- STYLES -->
+    <!-- CSS -->
     <link rel="stylesheet" href="assets/style.css" />
 </head>
 
@@ -18,12 +18,15 @@
 <!-- STARFIELD CANVAS -->
 <canvas id="starfield"></canvas>
 
-<!-- PAGE 1: MAIN -->
+<!-- HERO SELECTED TEXT -->
+<div id="heroSelectedText"></div>
+
+<!-- PAGE 1 -->
 <div id="page-main" class="page active">
     <h1>PLANET'S SMASH</h1>
 
     <div class="center-area">
-        <img src="earth.png" alt="Exploding Earth" class="planet-img" />
+        <img src="earth.png" alt="Explosion Earth" class="planet-img" />
 
         <div class="neon-box">
             <input type="text" id="playerName" class="input-name" placeholder="Enter Your Name"/>
@@ -32,17 +35,17 @@
     </div>
 </div>
 
-<!-- PAGE 2: HOW TO PLAY -->
+<!-- PAGE 2 -->
 <div id="page-howto" class="page">
     <h1>HOW TO PLAY?</h1>
 
     <div class="content-box">
-        <p><strong>1. Enter your name</strong><br>Type your name on the main screen and press Continue.</p>
-        <p><strong>2. Choose your hero</strong><br>Pick one of the four heroes. Each has different stats.</p>
-        <p><strong>3. Destroy targets</strong><br>Smash as fast and accurately as possible.</p>
-        <p><strong>4. Watch the timer</strong><br>You have only 60 seconds.</p>
-        <p><strong>5. Avoid penalties</strong><br>Miss hits reduce your score.</p>
-        <p><strong>6. Beat the high score</strong><br>Become the ultimate smasher.</p>
+        <p><strong>1. Enter your name</strong><br>Type your name and press Continue.</p>
+        <p><strong>2. Choose your hero</strong><br>Each hero has different abilities.</p>
+        <p><strong>3. Destroy targets</strong><br>Fast and accurate hits.</p>
+        <p><strong>4. Timer</strong><br>You have limited time.</p>
+        <p><strong>5. Penalties</strong><br>Wrong answers hurt the planet.</p>
+        <p><strong>6. Score</strong><br>Become the best smasher.</p>
     </div>
 
     <div class="goodluck">GOOD LUCK!</div>
@@ -53,61 +56,61 @@
     </div>
 </div>
 
-<!-- PAGE 3: CHARACTERS -->
+<!-- PAGE 3 -->
 <div id="page-characters" class="page">
     <h1>CHOOSE YOUR HERO</h1>
 
     <div class="characters-container">
 
+        <!-- CERES -->
         <div class="char-box yellow" data-hero="Ceres">
             <img src="characters/ceres.png" class="char-img"/>
             <div class="char-name">CERES</div>
-
             <div class="char-info-bubble">
                 <div class="char-info-title">Solar Guardian</div>
                 <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.85"></div></div></div>
                 <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.60"></div></div></div>
                 <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.30"></div></div></div>
-                <p class="char-desc">Burning solar spears from orbit.</p>
+                <p class="char-desc">Burning spears.</p>
             </div>
         </div>
 
+        <!-- JUNO -->
         <div class="char-box purple" data-hero="Juno">
             <img src="characters/juno.png" class="char-img"/>
             <div class="char-name">JUNO</div>
-
             <div class="char-info-bubble">
                 <div class="char-info-title">Shadow Runner</div>
                 <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.45"></div></div></div>
-                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:1.00"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:1"></div></div></div>
                 <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.20"></div></div></div>
-                <p class="char-desc">Teleports between targets.</p>
+                <p class="char-desc">Teleport strikes.</p>
             </div>
         </div>
 
+        <!-- MARS -->
         <div class="char-box red" data-hero="Mars">
             <img src="characters/mars.png" class="char-img"/>
             <div class="char-name">MARS</div>
-
             <div class="char-info-bubble">
                 <div class="char-info-title">Planet Brawler</div>
                 <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:1"></div></div></div>
                 <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.40"></div></div></div>
                 <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
-                <p class="char-desc">Explosive punches.</p>
+                <p class="char-desc">Explosive damage.</p>
             </div>
         </div>
 
+        <!-- VENUS -->
         <div class="char-box pink" data-hero="Venus">
             <img src="characters/venus.png" class="char-img"/>
             <div class="char-name">VENUS</div>
-
             <div class="char-info-bubble">
                 <div class="char-info-title">Orbital Muse</div>
                 <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
                 <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.80"></div></div></div>
                 <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.50"></div></div></div>
-                <p class="char-desc">Elegant chain energy waves.</p>
+                <p class="char-desc">Elegant waves.</p>
             </div>
         </div>
 
@@ -122,7 +125,7 @@
 <!-- SOUND -->
 <audio id="select-sfx" src="assets/select.mp3" preload="auto"></audio>
 
-<!-- SCRIPTS -->
+<!-- SCRIPT -->
 <script src="assets/script.js"></script>
 
 </body>
