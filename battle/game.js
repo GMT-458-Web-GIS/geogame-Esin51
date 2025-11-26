@@ -1,81 +1,127 @@
 // ==========================================
-// 1. OYUN AYARLARI & HERO
+// 1. OYUN AYARLARI & HERO VERİSİ
 // ==========================================
 const heroName = localStorage.getItem("ps_selectedHero") || "Ceres";
 const difficulty = localStorage.getItem("ps_difficulty") || "normal";
 
+// Hero Konfigürasyonu (GÜNCELLENMİŞ REPLİKLER)
 const heroConfig = {
-    Ceres: { color: "#ffd700", img: "../characters/ceres.png", quotes: { start: "Shields UP. Protect the core!", correct: "Target destroyed. Healing Earth.", wrong: "Shield breach! I can't hold it!", fail: "The light... is gone..." } },
-    Juno: { color: "#b43fff", img: "../characters/juno.png", quotes: { start: "Time bends to my will.", correct: "Frozen in time.", wrong: "Timeline destabilized!", fail: "Lost in the void..." } },
-    Mars: { color: "#ff3b3b", img: "../characters/mars.png", quotes: { start: "Ready to crush them!", correct: "ANNIHILATED!", wrong: "Argh! They hit back hard!", fail: "I... failed..." } },
-    Venus: { color: "#ff6bd6", img: "../characters/venus.png", quotes: { start: "Harmony is our strength.", correct: "Beautifully done.", wrong: "The aura is shattering!", fail: "Silence falls..." } }
+    Ceres: {
+        color: "#ffd700", // Sarı - Solar Guardian
+        img: "../characters/ceres.png",
+        quotes: {
+            start: "Stay behind me. I will guard this world.",
+            correct: "A solid strike. The Earth stands firm.",
+            wrong: "My shield weakens... answer carefully.",
+            combo: "You grow stronger with each truth. Continue.",
+            critical: "My shield... is fading. Protect what remains.",
+            win: "The world endures—because of you.",
+            fail: "I... couldn't hold it together. Forgive me."
+        }
+    },
+    Juno: {
+        color: "#b43fff", // Mor - Shadow Runner
+        img: "../characters/juno.png",
+        quotes: {
+            start: "Time bends for those who know how to use it. Follow my lead.",
+            correct: "Calculated. Precise. Just as planned.",
+            wrong: "Slow down... and breathe. We'll bend time back.",
+            combo: "Momentum is ours. Don't lose it.",
+            critical: "Time is slipping... but not out of my control yet.",
+            win: "All timelines converge to victory. Well played.",
+            fail: "Even time couldn't save this world... this time."
+        }
+    },
+    Mars: {
+        color: "#ff3b3b", // Kırmızı - Planet Brawler
+        img: "../characters/mars.png",
+        quotes: {
+            start: "Alright soldier. We hit hard, we hit fast. Let's show 'em.",
+            correct: "BOOM! That's what I'm talkin' about!",
+            wrong: "Tch— focus! We don't miss twice.",
+            combo: "Ayy, that's a HIT STREAK! Keep smashing!",
+            critical: "Earth is bleeding. We end this NOW!",
+            win: "YEAH! That's a clean knockout!",
+            fail: "...Damn. They broke the planet. My bad."
+        }
+    },
+    Venus: {
+        color: "#ff6bd6", // Pembe - Orbital Muse
+        img: "../characters/venus.png",
+        quotes: {
+            start: "Let harmony guide you. The universe listens.",
+            correct: "Beautifully done. A perfect choice.",
+            wrong: "It's alright... Every mistake is another lesson.",
+            combo: "Your flow is radiant. Keep it going.",
+            critical: "The Earth is hurting... Let me soothe it—but hurry.",
+            win: "Peace restored. You've done well.",
+            fail: "Even in endings... beauty remains."
+        }
+    }
 };
+
 const currentHero = heroConfig[heroName] || heroConfig["Ceres"];
 
 // ==========================================
-// 2. KORKUNÇ & SİNEMATİK SES MOTORU (AudioContext)
+// 2. SES MOTORU (ARCADE STYLE - Temiz Sesler)
 // ==========================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSoundEffect(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
-    // 1. DOĞRU CEVAP (Sci-Fi Power Up)
-    if (type === 'correct') {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+    if (type === 'correct') { 
+        // Ting! (Coin sesi gibi temiz)
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, t);
-        osc.frequency.exponentialRampToValueAtTime(1200, t + 0.1); // Hızlı yükseliş
+        osc.frequency.setValueAtTime(800, t);
+        osc.frequency.exponentialRampToValueAtTime(1600, t + 0.1);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0, t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
+    } 
+    else if (type === 'wrong') {
+        // Buzz (Hata)
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, t);
+        osc.frequency.linearRampToValueAtTime(100, t + 0.3);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0, t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
+    }
+    else if (type === 'explosion') {
+        // Patlama (Daha tok)
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(100, t);
+        osc.frequency.exponentialRampToValueAtTime(20, t + 0.4);
         gain.gain.setValueAtTime(0.2, t);
         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-        osc.connect(gain); gain.connect(audioCtx.destination);
         osc.start(t); osc.stop(t + 0.4);
-    } 
-    // 2. PATLAMA / YANLIŞ (Derin Boom + Gürültü)
-    else if (type === 'explosion') {
-        // A. Derin Darbe (Low Frequency)
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(100, t);
-        osc.frequency.exponentialRampToValueAtTime(20, t + 0.8); // Boom etkisi
-        gain.gain.setValueAtTime(0.8, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t); osc.stop(t + 0.8);
-
-        // B. Gürültü (Noise - Korkunç etki)
-        const bufferSize = audioCtx.sampleRate * 0.5; // 0.5 saniye
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const noiseGain = audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0.5, t);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-        noise.connect(noiseGain); noiseGain.connect(audioCtx.destination);
-        noise.start(t);
     }
-    // 3. OYUN BİTTİ (Karanlık Drone)
-    else if (type === 'gameover') {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(50, t); // Çok kalın
-        osc.frequency.linearRampToValueAtTime(30, t + 2);
-        gain.gain.setValueAtTime(0.5, t);
-        gain.gain.linearRampToValueAtTime(0, t + 2);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t); osc.stop(t + 2);
+    else if (type === 'win') {
+        // Zafer (Melodik)
+        playTone(523.25, 'sine', 0.1, 0);   // C
+        playTone(659.25, 'sine', 0.1, 0.15); // E
+        playTone(783.99, 'sine', 0.4, 0.3); // G
     }
 }
 
+function playTone(freq, type, duration, delay) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + duration);
+    osc.start(audioCtx.currentTime + delay); osc.stop(audioCtx.currentTime + delay + duration);
+}
+
 // ==========================================
-// 3. 30 SORU VERİTABANI (TAMAMI)
+// 3. 30 SORU (COĞRAFYA)
 // ==========================================
 const allQuestions = {
     easy: [
@@ -116,7 +162,6 @@ const allQuestions = {
     ]
 };
 
-// Desteden soruyu silmek için kopya oluşturuyoruz
 let gameDeck = [...(allQuestions[difficulty] || allQuestions["normal"])];
 
 // ==========================================
@@ -129,12 +174,12 @@ let currentQ = null;
 let timer = 100;
 let timerInterval = null;
 
-// Hero Pasifleri
-let marsStreak = 0;
-let junoCounter = 0;
+// Logic Variables
+let streakCount = 0; // Combo Sayacı
 let ceresShieldUsed = false;
+let junoCounter = 0;
 
-// Elementler
+// Elements
 const hpBar = document.getElementById("hp-bar");
 const hpText = document.getElementById("hp-text");
 const heroImg = document.getElementById("hero-img");
@@ -151,7 +196,7 @@ heroImg.src = currentHero.img;
 speak(currentHero.quotes.start);
 
 // ==========================================
-// 5. GLOBE INIT
+// 5. GLOBE INIT (MERKEZLİ)
 // ==========================================
 const world = Globe()
     (globeContainer)
@@ -170,7 +215,6 @@ world.controls().autoRotate = true;
 world.controls().autoRotateSpeed = 0.5;
 world.controls().enableZoom = false;
 
-// Resize
 function resize() {
     const size = Math.min(window.innerWidth, window.innerHeight) * 0.65;
     world.width(size);
@@ -185,7 +229,6 @@ window.addEventListener("resize", resize);
 function loadQuestion() {
     if(isGameOver) return;
     
-    // Soru bitti mi? (Victory)
     if(gameDeck.length === 0) {
         gameOver(true);
         return;
@@ -193,24 +236,29 @@ function loadQuestion() {
 
     world.ringsData([]); 
     world.atmosphereColor(currentHero.color);
-    world.pointOfView({ altitude: 2.5 }, 1000); // Kamerayı geri çek
+    world.pointOfView({ altitude: 2.5 }, 1000);
 
-    // Rastgele seç ve desteden çıkar (NO REPEAT)
     const randomIndex = Math.floor(Math.random() * gameDeck.length);
     currentQ = gameDeck[randomIndex];
-    gameDeck.splice(randomIndex, 1); // Sil
+    gameDeck.splice(randomIndex, 1); 
 
-    questionText.textContent = currentQ.q;
-    answersGrid.innerHTML = "";
-    
-    let opts = [...currentQ.ans].sort(() => Math.random() - 0.5);
-    opts.forEach(opt => {
-        const btn = document.createElement("button");
-        btn.className = "answer-btn";
-        btn.textContent = opt;
-        btn.onclick = () => checkAnswer(opt, btn);
-        answersGrid.appendChild(btn);
-    });
+    // SYSTEM MESSAGE
+    questionText.textContent = "Scanning the globe..."; 
+    answersGrid.innerHTML = ""; // Butonları temizle
+
+    // 1 saniye sonra soruyu göster (Sistem efekti)
+    setTimeout(() => {
+        questionText.textContent = currentQ.q;
+        
+        let opts = [...currentQ.ans].sort(() => Math.random() - 0.5);
+        opts.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "answer-btn";
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(opt, btn);
+            answersGrid.appendChild(btn);
+        });
+    }, 800);
 }
 
 function checkAnswer(selected, btn) {
@@ -223,23 +271,26 @@ function checkAnswer(selected, btn) {
         playSoundEffect('correct');
         
         let earned = 100;
-        // Hero Passives
-        if(heroName === "Mars") {
-            earned = Math.floor(earned * 1.15);
-            marsStreak++;
-            if(marsStreak >= 3) { earned *= 2; speak("CRITICAL HIT! 2X POINTS!"); marsStreak = 0; } 
-            else speak(currentHero.quotes.correct);
-        }
-        else if(heroName === "Venus") { updateHealth(3); speak("Earth is healing..."); }
-        else if(heroName === "Juno") {
+        streakCount++; // Combo arttır
+
+        // Hero Özellikleri
+        if(heroName === "Mars") earned = Math.floor(earned * 1.15);
+        if(heroName === "Venus") updateHealth(3);
+        if(heroName === "Juno") {
             junoCounter++;
-            if(junoCounter >= 3) { timer += 3; speak("Time extended!"); junoCounter = 0; } 
-            else speak(currentHero.quotes.correct);
+            if(junoCounter >= 3) { timer += 3; junoCounter = 0; }
         }
-        else speak(currentHero.quotes.correct);
+
+        // COMBO KONUŞMASI (3 Doğru)
+        if(streakCount === 3) {
+            speak(currentHero.quotes.combo);
+            if(heroName === "Mars") earned *= 2; // Mars'ın özelliği
+        } else {
+            speak(currentHero.quotes.correct);
+        }
 
         score += earned;
-        updateHealth(0); // Update UI
+        updateHealth(0); 
         
         // Yeşil Efekt
         world.atmosphereColor("#39ff39");
@@ -251,28 +302,29 @@ function checkAnswer(selected, btn) {
         // --- YANLIŞ ---
         btn.classList.add("wrong");
         playSoundEffect('explosion');
-        if(heroName === "Mars") marsStreak = 0;
+        
+        streakCount = 0; // Combo sıfırla
+        junoCounter = 0;
 
         let dmg = 20;
-        // Hero Passives
-        if(heroName === "Ceres") { dmg *= 0.75; speak("Shield absorbed impact!"); } 
-        else if(heroName === "Venus" && hp < 40) { dmg *= 0.90; speak(currentHero.quotes.wrong); } 
-        else { speak(currentHero.quotes.wrong); }
+        if(heroName === "Ceres") dmg *= 0.75; 
+        if(heroName === "Venus" && hp < 40) dmg *= 0.90; 
 
         updateHealth(-dmg);
         
-        // Ceres Emergency
-        if(heroName === "Ceres" && hp < 30 && !ceresShieldUsed) {
-            hp += 15; ceresShieldUsed = true; speak("SOLAR SHIELD ACTIVATED!");
+        // Kritik HP Konuşması mı yoksa Normal Yanlış mı?
+        if(hp < 30 && hp > 0) {
+            speak(currentHero.quotes.critical);
+        } else {
+            speak(currentHero.quotes.wrong);
         }
 
-        // DÜNYA SARSINTISI (FIXED ANCHOR)
+        // Kırmızı Efekt & Sarsıntı
         globeContainer.classList.add("shake-globe");
         setTimeout(() => globeContainer.classList.remove("shake-globe"), 500);
         document.body.classList.add("shake-screen");
         setTimeout(() => document.body.classList.remove("shake-screen"), 500);
 
-        // Kırmızı Efekt
         world.atmosphereColor("red");
         world.pointOfView({ lat: currentQ.lat, lng: currentQ.lng, altitude: 2 }, 800);
         setTimeout(() => {
@@ -287,9 +339,19 @@ function checkAnswer(selected, btn) {
 function updateHealth(amount) {
     hp += amount;
     if(hp > 100) hp = 100;
+    
+    // UI Update
     hpBar.style.width = hp + "%";
     hpText.textContent = `SHIELD: ${Math.floor(hp)}%`;
 
+    // Ceres Kalkan (Tek Seferlik)
+    if(heroName === "Ceres" && hp < 30 && !ceresShieldUsed) {
+        hp += 15; 
+        ceresShieldUsed = true; 
+        // Bunu checkAnswer içinde speak olarak hallettik
+    }
+
+    // Renk
     if(hp > 60) hpBar.style.background = "linear-gradient(90deg, #00ff00, #adff2f)";
     else if(hp > 30) hpBar.style.background = "linear-gradient(90deg, #ffd700, #ff8c00)";
     else hpBar.style.background = "linear-gradient(90deg, #ff4500, #ff0000)";
@@ -323,10 +385,15 @@ function gameOver(win) {
     clearInterval(timerInterval);
     finalScreen.classList.remove("hidden");
     document.getElementById("final-score").textContent = score;
-    document.getElementById("final-hero-msg").textContent = win ? "Planet Secured. Well done." : currentHero.quotes.fail;
+    
+    // REPLİK SEÇİMİ
+    const endQuote = win ? currentHero.quotes.win : currentHero.quotes.fail;
+    document.getElementById("final-hero-msg").textContent = `"${endQuote}"`;
+    
     document.getElementById("final-title").textContent = win ? "VICTORY" : "GAME OVER";
     document.getElementById("final-title").style.color = win ? "#39ff39" : "red";
-    playSoundEffect('gameover');
+    
+    if(win) playSoundEffect('win'); else playSoundEffect('gameover');
 }
 
 loadQuestion();
