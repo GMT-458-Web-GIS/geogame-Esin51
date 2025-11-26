@@ -12,6 +12,8 @@
 <body>
     <canvas id="starfield"></canvas>
 
+    <div id="timer-container">TIME: <span id="game-timer">100</span></div>
+
     <div id="health-bar-container">
         <div id="health-bar"></div>
     </div>
@@ -26,30 +28,26 @@
 
     <div id="difficulty-screen">
         <h1 class="main-title">SELECT DIFFICULTY</h1>
-        
         <div class="cards-container">
             <div class="card easy" onclick="startGame('easy')">
                 <h2>EASY</h2>
-                <p>Relaxed pace, fewer penalties.</p>
+                <p>Relaxed pace.</p>
             </div>
-
             <div class="card normal" onclick="startGame('normal')">
                 <h2>NORMAL</h2>
-                <p>Balanced difficulty.<br>Recommended.</p>
+                <p>Balanced.</p>
             </div>
-
             <div class="card hard" onclick="startGame('hard')">
                 <h2>HARD</h2>
-                <p>Fast, intense and punishing.</p>
+                <p>Intense.</p>
             </div>
         </div>
-
         <button class="back-btn" onclick="location.reload()">Back</button>
     </div>
 
     <div id="game-over-screen" class="hidden">
-        <h1 style="color: red; font-size: 3rem;">GAME OVER</h1>
-        <p style="color: white;">The planet has been destroyed.</p>
+        <h1 id="end-title" style="color: red; font-size: 3rem;">GAME OVER</h1>
+        <p id="end-reason" style="color: white;">The planet has fallen.</p>
         <button class="back-btn" onclick="location.reload()">RESTART</button>
     </div>
 

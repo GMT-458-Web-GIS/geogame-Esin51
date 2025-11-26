@@ -2,8 +2,10 @@
 // 1. AYARLAR & DEĞİŞKENLER
 // =====================================
 let health = 100;
+let timeLeft = 100; // 100 saniye
 let isGameOver = false;
 let currentDifficulty = 'normal';
+let timerInterval = null;
 
 const difficultyScreen = document.getElementById("difficulty-screen");
 const questionArea = document.getElementById("question-area");
@@ -12,6 +14,9 @@ const questionText = document.getElementById("question-text");
 const answersContainer = document.getElementById("answers-container");
 const heroStatus = document.getElementById("hero-status");
 const gameOverScreen = document.getElementById("game-over-screen");
+const timerDisplay = document.getElementById("game-timer");
+const endTitle = document.getElementById("end-title");
+const endReason = document.getElementById("end-reason");
 
 // =====================================
 // 2. DÜNYA (GLOBE) AYARLARI
@@ -24,13 +29,11 @@ const world = Globe()
     .showAtmosphere(true)
     .atmosphereColor("#3a228a")
     .atmosphereAltitude(0.15)
-    // --- BOMBA / SALDIRI EFEKTİ ---
     .ringColor(() => "red")
     .ringMaxRadius(30)
     .ringPropagationSpeed(8)
     .ringRepeatPeriod(200);
 
-// Kontroller
 world.controls().autoRotate = true;
 world.controls().autoRotateSpeed = 0.6;
 world.controls().enableZoom = false;
@@ -44,7 +47,7 @@ resize();
 window.addEventListener("resize", resize);
 
 // =====================================
-// 3. SORULAR (SENİN İSTEDİĞİN LİSTE)
+// 3. SORULAR
 // =====================================
 const questionData = [
     { question: "Where is Turkey's capital located?", answers: ["Ankara", "Istanbul", "Izmir", "Bursa"], correct: "Ankara", lat: 39.93, lng: 32.86 },
@@ -69,35 +72,53 @@ const questionData = [
 let currentQuestion = null;
 
 // =====================================
-// 4. OYUNU BAŞLAT (ZORLUK SEÇİMİ)
+// 4. OYUN BAŞLAT
 // =====================================
-// HTML'deki onclick="startGame('easy')" burayı çağırır
 window.startGame = function(difficulty) {
-    console.log("Game Starting: " + difficulty);
     currentDifficulty = difficulty;
-
-    // 1. Zorluk ekranını gizle
     difficultyScreen.style.display = "none";
-
-    // 2. Oyun arayüzünü aç
     questionArea.classList.remove("hidden");
-
-    // 3. Soruları yükle
+    
+    // Süreye göre zorluk ayarı (İstersen)
+    timeLeft = 100;
+    
+    startTimer();
     loadQuestion();
 }
 
 // =====================================
-// 5. OYUN FONKSİYONLARI
+// 5. ZAMANLAYICI (TIMER)
+// =====================================
+function startTimer() {
+    timerDisplay.textContent = timeLeft;
+    
+    timerInterval = setInterval(() => {
+        if(isGameOver) {
+            clearInterval(timerInterval);
+            return;
+        }
+
+        timeLeft--;
+        timerDisplay.textContent = timeLeft;
+
+        if(timeLeft <= 0) {
+            triggerGameOver("Time's Up!");
+        }
+    }, 1000);
+}
+
+// =====================================
+// 6. OYUN MANTIĞI
 // =====================================
 
 function loadQuestion() {
     if (isGameOver) return;
 
-    // Efektleri temizle
-    world.ringsData([]); 
-    world.pointOfView({ altitude: 2.5 }, 1000); // Kamerayı uzaklaştır
+    // Kamerayı GERİ ÇEK (Dünya yukarıda kalmasın)
+    // altitude 2.5 yaparak kamerayı uzaklaştırıyoruz
+    world.pointOfView({ altitude: 2.5 }, 1000); 
+    world.ringsData([]); // Efektleri temizle
 
-    // Soru Seç
     currentQuestion = questionData[Math.floor(Math.random() * questionData.length)];
 
     questionText.textContent = currentQuestion.question;
@@ -105,7 +126,6 @@ function loadQuestion() {
     heroStatus.textContent = "Waiting for input...";
     heroStatus.style.color = "#00eaff";
 
-    // Şıkları Karıştır
     let shuffled = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
 
     shuffled.forEach(ans => {
@@ -124,17 +144,15 @@ function checkAnswer(selectedAns, btnElement) {
     allBtns.forEach(b => b.disabled = true);
 
     if (selectedAns === currentQuestion.correct) {
-        // --- DOĞRU ---
+        // DOĞRU
         btnElement.classList.add("correct");
         heroStatus.textContent = "CORRECT! Target Secured.";
         heroStatus.style.color = "#39ff39";
         setTimeout(loadQuestion, 1500);
 
     } else {
-        // --- YANLIŞ (SALDIRI!) ---
+        // YANLIŞ
         btnElement.classList.add("wrong");
-        
-        // Doğruyu göster
         allBtns.forEach(b => {
             if (b.textContent === currentQuestion.correct) b.classList.add("correct");
         });
@@ -142,32 +160,31 @@ function checkAnswer(selectedAns, btnElement) {
         heroStatus.textContent = "WRONG! IMPACT DETECTED!";
         heroStatus.style.color = "red";
 
-        // Zorluğa göre hasar
         let damage = 20;
         if(currentDifficulty === 'hard') damage = 40;
         if(currentDifficulty === 'easy') damage = 10;
         
         takeDamage(damage);
 
-        // --- SALDIRI ANİMASYONU ---
-        // 1. Oraya odaklan
+        // SALDIRI EFEKTİ
+        // Kamerayı yaklaştır (Bomba düşüyor gibi)
         world.pointOfView({ 
             lat: currentQuestion.lat, 
             lng: currentQuestion.lng, 
             altitude: 1.5 
         }, 800);
 
-        // 2. Patlama efekti (Halka)
         setTimeout(() => {
             world.ringsData([{
                 lat: currentQuestion.lat,
                 lng: currentQuestion.lng
             }]);
             
-            // Ekran sarsıntısı
-            document.body.style.transform = "translate(5px, 5px)";
-            setTimeout(() => document.body.style.transform = "translate(-5px, -5px)", 50);
-            setTimeout(() => document.body.style.transform = "translate(0, 0)", 100);
+            // CSS Sarsıntısı
+            const globeDiv = document.getElementById("globe-container");
+            globeDiv.style.transform = "translate(-50%, -50%) translate(10px, 10px)";
+            setTimeout(() => globeDiv.style.transform = "translate(-50%, -50%) translate(-10px, -10px)", 50);
+            setTimeout(() => globeDiv.style.transform = "translate(-50%, -50%)", 100);
 
         }, 800);
 
@@ -181,15 +198,21 @@ function takeDamage(amount) {
     
     healthBar.style.width = health + "%";
     
-    if (health <= 30) {
-        healthBar.style.background = "red";
-    }
+    if (health <= 30) healthBar.style.background = "red";
 
     if (health === 0) {
-        isGameOver = true;
-        setTimeout(() => {
-            gameOverScreen.classList.remove("hidden");
-            world.atmosphereColor("red");
-        }, 1000);
+        triggerGameOver("Planet Destroyed");
     }
+}
+
+function triggerGameOver(reason) {
+    isGameOver = true;
+    clearInterval(timerInterval);
+    endTitle.textContent = "GAME OVER";
+    endReason.textContent = reason;
+    
+    setTimeout(() => {
+        gameOverScreen.classList.remove("hidden");
+        world.atmosphereColor("red");
+    }, 1000);
 }
