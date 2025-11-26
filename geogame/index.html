@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planet's Smash</title>
+
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- STYLES -->
+    <link rel="stylesheet" href="assets/style.css" />
+</head>
+
+<body>
+
+<!-- STARFIELD CANVAS -->
+<canvas id="starfield"></canvas>
+
+<!-- PAGE 1: MAIN -->
+<div id="page-main" class="page active">
+    <h1>PLANET'S SMASH</h1>
+
+    <div class="center-area">
+        <img src="earth.png" alt="Exploding Earth" class="planet-img" />
+
+        <div class="neon-box">
+            <input type="text" id="playerName" class="input-name" placeholder="Enter Your Name"/>
+            <button class="btn-main" onclick="goHowToPlay()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2: HOW TO PLAY -->
+<div id="page-howto" class="page">
+    <h1>HOW TO PLAY?</h1>
+
+    <div class="content-box">
+        <p><strong>1. DEFEND THE COORDINATES</strong><br>Enemies are targeting specific locations on Earth. Identify the correct location to intercept them.</p>
+        <p><strong>2. CORRECT ANSWER = DEFENSE</strong><br>Answer correctly to fire your Hero's beam and destroy the threat. Earth heals.</p>
+        <p><strong>3. WRONG ANSWER = IMPACT</strong><br>If you miss, the bomb hits the real-world location. Earth takes damage.</p>
+        <p><strong>4. WATCH THE TIMER</strong><br>You have limited time to lock on the target.</p>
+        <p><strong>5. HERO ABILITIES</strong><br>Choose your hero wisely. Each has unique visual effects and dialogue.</p>
+    </div>
+
+    <div class="goodluck">GOOD LUCK!</div>
+
+    <div class="btn-row">
+        <button class="btn-secondary" onclick="showPage('page-main')">Back</button>
+        <button class="btn-primary" onclick="showPage('page-characters')">Continue</button>
+    </div>
+</div>
+
+<!-- PAGE 3: CHARACTERS -->
+<div id="page-characters" class="page">
+    <h1>CHOOSE YOUR HERO</h1>
+
+    <div class="characters-container">
+
+        <div class="char-box yellow" data-hero="Ceres">
+            <img src="characters/ceres.png" class="char-img"/>
+            <div class="char-name">CERES</div>
+
+            <div class="char-info-bubble">
+                <div class="char-info-title">Solar Guardian</div>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.85"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.60"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.30"></div></div></div>
+                <p class="char-desc">Burning solar spears from orbit.</p>
+            </div>
+        </div>
+
+        <div class="char-box purple" data-hero="Juno">
+            <img src="characters/juno.png" class="char-img"/>
+            <div class="char-name">JUNO</div>
+
+            <div class="char-info-bubble">
+                <div class="char-info-title">Shadow Runner</div>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.45"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:1.00"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.20"></div></div></div>
+                <p class="char-desc">Teleports between targets.</p>
+            </div>
+        </div>
+
+        <div class="char-box red" data-hero="Mars">
+            <img src="characters/mars.png" class="char-img"/>
+            <div class="char-name">MARS</div>
+
+            <div class="char-info-bubble">
+                <div class="char-info-title">Planet Brawler</div>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:1"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.40"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
+                <p class="char-desc">Explosive punches.</p>
+            </div>
+        </div>
+
+        <div class="char-box pink" data-hero="Venus">
+            <img src="characters/venus.png" class="char-img"/>
+            <div class="char-name">VENUS</div>
+
+            <div class="char-info-bubble">
+                <div class="char-info-title">Orbital Muse</div>
+                <div class="stat-row"><span>Power</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.70"></div></div></div>
+                <div class="stat-row"><span>Speed</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.80"></div></div></div>
+                <div class="stat-row"><span>Cooldown</span><div class="stat-bar"><div class="stat-fill" style="--fill:0.50"></div></div></div>
+                <p class="char-desc">Elegant chain energy waves.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-secondary" onclick="showPage('page-howto')">Back</button>
+        <button class="btn-primary" onclick="confirmHero()">Continue</button>
+    </div>
+</div>
+
+<!-- SOUND -->
+<audio id="select-sfx" src="assets/select.mp3" preload="auto"></audio>
+
+<!-- SCRIPTS -->
+<script src="assets/script.js"></script>
+
+</body>
+</html>
+
+<!-- PAGE 4: MODE SELECT -->
+<div id="page-mode" class="page">
+    <h1>SELECT DIFFICULTY</h1>
+
+    <div class="mode-container">
+
+        <div class="mode-box easy" onclick="chooseMode('easy')">
+            <div class="mode-title">EASY</div>
+            <p>Relaxed pace, fewer penalties.</p>
+        </div>
+
+        <div class="mode-box normal" onclick="chooseMode('normal')">
+            <div class="mode-title">NORMAL</div>
+            <p>Balanced difficulty. Recommended.</p>
+        </div>
+
+        <div class="mode-box hard" onclick="chooseMode('hard')">
+            <div class="mode-title">HARD</div>
+            <p>Fast, intense and punishing.</p>
+        </div>
+
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-secondary" onclick="showPage('page-characters')">Back</button>
+    </div>
+</div>

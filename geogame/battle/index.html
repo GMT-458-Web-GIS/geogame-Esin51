@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planet Smash – Battle Zone</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="//unpkg.com/globe.gl"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="dynamic-background"></div>
+    <canvas id="starfield"></canvas>
+
+    <div id="hp-container">
+        <div id="hp-bar"></div>
+        <div id="hp-text">SHIELD INTEGRITY: 100%</div>
+    </div>
+
+    <div id="timer-container">
+        <div id="timer-ring">
+            <svg class="progress-ring" width="90" height="90">
+                <circle class="progress-ring__circle" stroke="white" stroke-width="6" fill="transparent" r="36" cx="45" cy="45"/>
+            </svg>
+            <div id="timer-text">100</div>
+        </div>
+    </div>
+
+    <div id="globe-container"></div>
+
+    <div id="hero-display">
+        <div id="hero-bubble">System initialized. Targets locked.</div>
+        <img id="hero-img" src="" alt="Hero">
+    </div>
+
+    <div id="battle-ui">
+        <div id="question-box">
+            <h2 id="question-text">Loading mission data...</h2>
+        </div>
+        <div id="answers-grid"></div>
+    </div>
+
+    <div id="final-screen" class="hidden">
+        <div id="final-content">
+            <h1 id="final-title">GAME OVER</h1>
+            <div id="final-score-box">
+                <p>SCORE: <span id="final-score">0</span></p>
+            </div>
+            <p id="final-hero-msg">...</p>
+            <div class="final-buttons">
+                <button id="restart-btn" onclick="location.reload()">RETRY MISSION</button>
+                <button id="menu-btn" onclick="window.location.href='../index.html'">MAIN MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
