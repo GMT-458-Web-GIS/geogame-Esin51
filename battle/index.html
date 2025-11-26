@@ -1,37 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planet Smash – Battle</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 
-    <!-- DOĞRU THREE.js + GLOBE.gl -->
-    <script src="https://unpkg.com/three@0.146.0/build/three.min.js"></script>
-    <script src="https://unpkg.com/globe.gl@2.30.1/dist/globe.gl.min.js"></script>
+    <script src="https://unpkg.com/globe.gl"></script>
 </head>
 
 <body>
 
-    <!-- STARFIELD -->
     <canvas id="starfield"></canvas>
 
-    <!-- HEALTH BAR -->
     <div id="health-bar-container">
         <div id="health-bar"></div>
     </div>
 
-    <!-- HERO -->
     <img id="hero-image" src="" alt="Hero">
 
-    <!-- GLOBE -->
     <div id="globe-container"></div>
 
-    <!-- QUESTION AREA -->
     <div id="question-area">
-        <p id="hero-status" class="status-text">Prepare yourself...</p>
-        <p id="question-text">Loading question...</p>
+        <p id="hero-status" class="status-text">Prepare yourself…</p>
+        <p id="question-text">Loading question…</p>
         <div id="answers-container"></div>
     </div>
 
