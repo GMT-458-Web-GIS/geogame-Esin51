@@ -4,40 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Planet Smash – Battle</title>
-    <link rel="stylesheet" href="style.css">
 
-    <!-- Fontlar -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <!-- UI -->
-    <div id="ui-top">
-        <div id="hero-silhouette"></div>
-
-        <div id="hero-dialog">
-            <span id="dialog-text">Prepare yourself!</span>
-            <div id="timer-ring">
-                <svg width="70" height="70">
-                    <circle cx="35" cy="35" r="30" stroke="#00eaff" stroke-width="5" fill="none" />
-                    <circle id="timer-progress" cx="35" cy="35" r="30" stroke="#00ffaa"
-                        stroke-width="5" fill="none" stroke-linecap="round"
-                        stroke-dasharray="188" stroke-dashoffset="0" />
-                </svg>
-            </div>
-        </div>
+    <!-- HEALTH BAR -->
+    <div id="health-bar-container">
+        <div id="health-bar"></div>
     </div>
 
-    <canvas id="world-canvas"></canvas>
-
-    <div id="question-panel">
-        <h2 id="question-text">Loading question...</h2>
-        <div id="answers"></div>
+    <!-- HERO + STATUS -->
+    <div id="top-right-ui">
+        <div id="hero-status">Prepare yourself!</div>
+        <div id="hero-icon"></div>
     </div>
 
-    <div id="hp-bar">
-        <div id="hp-fill"></div>
+    <!-- GAME AREA -->
+    <div id="game-area">
+        <p id="question-text">Loading question...</p>
+
+        <div id="answers-container"></div>
     </div>
 
     <script src="game.js"></script>
