@@ -1,12 +1,29 @@
 /* --------------------------------------------------------
+   LOAD HERO & EARTH
+-------------------------------------------------------- */
+const heroImage = document.getElementById("hero-image");
+const selectedHero = localStorage.getItem("ps_selectedHero") || "Ceres";
+
+const heroImages = {
+    Ceres: "../characters/ceres.png",
+    Juno: "../characters/juno.png",
+    Mars: "../characters/mars.png",
+    Venus: "../characters/venus.png"
+};
+
+heroImage.src = heroImages[selectedHero];
+
+const earthImage = document.getElementById("earth-image");
+
+
+/* --------------------------------------------------------
    READ MODE FROM LOCALSTORAGE
 -------------------------------------------------------- */
 const mode = localStorage.getItem("ps_gameMode") || "normal";
 
-let damage = 20;       
+let damage = 20;
 let questionDelay = 1200;
 
-// MODE EFFECTS
 if (mode === "easy") {
     damage = 10;
     questionDelay = 1600;
@@ -29,7 +46,7 @@ const heroStatus = document.getElementById("hero-status");
 
 
 /* --------------------------------------------------------
-   TEMP QUESTIONS (GEÇİCİ)
+   QUESTIONS (TEMP)
 -------------------------------------------------------- */
 const questions = [
     {
@@ -51,7 +68,7 @@ const questions = [
 
 
 /* --------------------------------------------------------
-   LOAD A QUESTION
+   LOAD QUESTION
 -------------------------------------------------------- */
 function loadQuestion() {
 
@@ -72,9 +89,7 @@ function loadQuestion() {
         btn.className = "answer-btn";
         btn.textContent = ans;
 
-        btn.onclick = () => {
-            checkAnswer(ans === q.correct);
-        };
+        btn.onclick = () => checkAnswer(ans === q.correct);
 
         answersContainer.appendChild(btn);
     });
@@ -89,13 +104,12 @@ function checkAnswer(isCorrect) {
     if (isCorrect) {
         heroStatus.textContent = "Nice hit!";
         heroStatus.style.color = "#39ff39";
+    }
 
-    } else {
-        // APPLY DAMAGE BASED ON MODE
+    else {
         health -= damage;
         if (health < 0) health = 0;
 
-        // UPDATE HEALTH BAR
         healthBar.style.width = health + "%";
 
         if (health <= 60 && health > 30) healthBar.style.background = "yellow";
@@ -104,29 +118,34 @@ function checkAnswer(isCorrect) {
         heroStatus.textContent = "Wrong! Earth is damaged!";
         heroStatus.style.color = "red";
 
-        // If HP reaches 0 → game over
+        // Earth damage animation
+        earthImage.classList.add("earth-damage");
+        setTimeout(() => earthImage.classList.remove("earth-damage"), 400);
+
+        // Hero shake animation
+        heroImage.classList.add("hero-damage");
+        setTimeout(() => heroImage.classList.remove("hero-damage"), 300);
+
         if (health <= 0) {
             setTimeout(() => endGame(false), 800);
             return;
         }
     }
 
-    // NEXT QUESTION
+    // Next question
     setTimeout(loadQuestion, questionDelay);
 }
 
 
 /* --------------------------------------------------------
-   END GAME
+   INIT FIRST QUESTION
 -------------------------------------------------------- */
-function endGame(isWin) {
-    questionText.textContent = isWin ? "YOU SAVED EARTH!" : "EARTH IS DESTROYED!";
-    answersContainer.innerHTML = "";
-    heroStatus.textContent = "";
-}
+setTimeout(loadQuestion, 1200);
 
 
 /* --------------------------------------------------------
-   START GAME
+   GAME END (placeholder)
 -------------------------------------------------------- */
-setTimeout(loadQuestion, 1000);
+function endGame(win) {
+    alert(win ? "You win!" : "You lost...");
+}

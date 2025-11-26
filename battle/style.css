@@ -81,3 +81,65 @@ body {
     transform: scale(1.05);
     background: #00eaff33;
 }
+
+/* --------------------------
+   HERO PANEL (right side)
+-------------------------- */
+#hero-panel {
+    position: absolute;
+    right: 40px;
+    top: 150px;
+    width: 280px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+#hero-image {
+    width: 260px;
+    filter: drop-shadow(0 0 20px rgba(0,255,255,0.5));
+    transition: 0.2s;
+}
+
+/* When wrong answer (shake) */
+.hero-damage {
+    animation: heroShake 0.3s;
+}
+
+@keyframes heroShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-12px); }
+    50% { transform: translateX(12px); }
+    75% { transform: translateX(-8px); }
+    100% { transform: translateX(0); }
+}
+
+/* --------------------------
+   EARTH PANEL (center)
+-------------------------- */
+#earth-panel {
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 350px;
+    height: 350px;
+}
+
+#earth-image {
+    width: 100%;
+    transition: 0.3s;
+}
+
+/* Earth damage animation */
+.earth-damage {
+    animation: earthFlash 0.4s;
+}
+
+@keyframes earthFlash {
+    0% { filter: brightness(2) hue-rotate(0deg); }
+    50% { filter: brightness(0.6) hue-rotate(90deg); }
+    100% { filter: brightness(1) hue-rotate(0deg); }
+}
