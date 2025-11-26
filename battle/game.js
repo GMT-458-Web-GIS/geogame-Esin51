@@ -1,92 +1,128 @@
 // ==========================================
-// 1. OYUN AYARLARI & HERO
+// 1. OYUN AYARLARI & HERO VERİSİ
 // ==========================================
 const heroName = localStorage.getItem("ps_selectedHero") || "Ceres";
 const difficulty = localStorage.getItem("ps_difficulty") || "normal";
 
-// ... (HeroConfig ve Replikler AYNI KALACAK - Kısaltıyorum) ...
+// Hero Konfigürasyonu (GÜNCELLENMİŞ REPLİKLER)
 const heroConfig = {
-    Ceres: { color: "#ffd700", img: "../characters/ceres.png", quotes: { start: "Stay behind me. I will guard this world.", correct: "A solid strike. The Earth stands firm.", wrong: "My shield weakens... answer carefully.", combo: "You grow stronger with each truth. Continue.", critical: "My shield... is fading. Protect what remains.", win: "The world endures—because of you.", fail: "I... couldn't hold it together. Forgive me." } },
-    Juno: { color: "#b43fff", img: "../characters/juno.png", quotes: { start: "Time bends for those who know how to use it. Follow my lead.", correct: "Calculated. Precise. Just as planned.", wrong: "Slow down... and breathe. We'll bend time back.", combo: "Momentum is ours. Don't lose it.", critical: "Time is slipping... but not out of my control yet.", win: "All timelines converge to victory. Well played.", fail: "Even time couldn't save this world... this time." } },
-    Mars: { color: "#ff3b3b", img: "../characters/mars.png", quotes: { start: "Alright soldier. We hit hard, we hit fast. Let's show 'em.", correct: "BOOM! That's what I'm talkin' about!", wrong: "Tch— focus! We don't miss twice.", combo: "Ayy, that's a HIT STREAK! Keep smashing!", critical: "Earth is bleeding. We end this NOW!", win: "YEAH! That's a clean knockout!", fail: "...Damn. They broke the planet. My bad." } },
-    Venus: { color: "#ff6bd6", img: "../characters/venus.png", quotes: { start: "Let harmony guide you. The universe listens.", correct: "Beautifully done. A perfect choice.", wrong: "It's alright... Every mistake is another lesson.", combo: "Your flow is radiant. Keep it going.", critical: "The Earth is hurting... Let me soothe it—but hurry.", win: "Peace restored. You've done well.", fail: "Even in endings... beauty remains." } }
+    Ceres: {
+        color: "#ffd700", // Sarı - Solar Guardian
+        img: "../characters/ceres.png",
+        quotes: {
+            start: "Stay behind me. I will guard this world.",
+            correct: "A solid strike. The Earth stands firm.",
+            wrong: "My shield weakens... answer carefully.",
+            combo: "You grow stronger with each truth. Continue.",
+            critical: "My shield... is fading. Protect what remains.",
+            win: "The world endures—because of you.",
+            fail: "I... couldn't hold it together. Forgive me."
+        }
+    },
+    Juno: {
+        color: "#b43fff", // Mor - Shadow Runner
+        img: "../characters/juno.png",
+        quotes: {
+            start: "Time bends for those who know how to use it. Follow my lead.",
+            correct: "Calculated. Precise. Just as planned.",
+            wrong: "Slow down... and breathe. We'll bend time back.",
+            combo: "Momentum is ours. Don't lose it.",
+            critical: "Time is slipping... but not out of my control yet.",
+            win: "All timelines converge to victory. Well played.",
+            fail: "Even time couldn't save this world... this time."
+        }
+    },
+    Mars: {
+        color: "#ff3b3b", // Kırmızı - Planet Brawler
+        img: "../characters/mars.png",
+        quotes: {
+            start: "Alright soldier. We hit hard, we hit fast. Let's show 'em.",
+            correct: "BOOM! That's what I'm talkin' about!",
+            wrong: "Tch— focus! We don't miss twice.",
+            combo: "Ayy, that's a HIT STREAK! Keep smashing!",
+            critical: "Earth is bleeding. We end this NOW!",
+            win: "YEAH! That's a clean knockout!",
+            fail: "...Damn. They broke the planet. My bad."
+        }
+    },
+    Venus: {
+        color: "#ff6bd6", // Pembe - Orbital Muse
+        img: "../characters/venus.png",
+        quotes: {
+            start: "Let harmony guide you. The universe listens.",
+            correct: "Beautifully done. A perfect choice.",
+            wrong: "It's alright... Every mistake is another lesson.",
+            combo: "Your flow is radiant. Keep it going.",
+            critical: "The Earth is hurting... Let me soothe it—but hurry.",
+            win: "Peace restored. You've done well.",
+            fail: "Even in endings... beauty remains."
+        }
+    }
 };
+
 const currentHero = heroConfig[heroName] || heroConfig["Ceres"];
 
 // ==========================================
-// 2. YENİ "KORKU/GERİLİM" SES MOTORU (Sinematik)
+// 2. SES MOTORU (ARCADE STYLE - Temiz Sesler)
 // ==========================================
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-// Gürültü Oluşturucu (Patlamalar için)
-function createNoiseBuffer() {
-    const bufferSize = audioCtx.sampleRate * 1.5; // 1.5 saniye gürültü
-    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-    return buffer;
-}
-const noiseBuffer = createNoiseBuffer();
 
 function playSoundEffect(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
 
     if (type === 'correct') { 
-        // Mistik/Derin Başarı Sesi
-        const osc1 = audioCtx.createOscillator(); osc1.type = 'sine'; osc1.frequency.setValueAtTime(300, t);
-        const osc2 = audioCtx.createOscillator(); osc2.type = 'triangle'; osc2.frequency.setValueAtTime(600, t);
-        const gain = audioCtx.createGain();
-        
-        osc1.connect(gain); osc2.connect(gain); gain.connect(audioCtx.destination);
-
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.2, t + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 1.5); // Uzun sönümlenme (reverb hissi)
-
-        osc1.start(t); osc1.stop(t + 1.5);
-        osc2.start(t); osc2.stop(t + 1.5);
+        // Ting! (Coin sesi gibi temiz)
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, t);
+        osc.frequency.exponentialRampToValueAtTime(1600, t + 0.1);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0, t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
     } 
-    else if (type === 'explosion') {
-        // DERİN DARBE + METALİK GÜRÜLTÜ (Korkunç)
-        // 1. Sub-Bass Darbe (Boom)
-        const subOsc = audioCtx.createOscillator(); subOsc.type = 'sine';
-        subOsc.frequency.setValueAtTime(80, t);
-        subOsc.frequency.exponentialRampToValueAtTime(10, t + 1.0);
-        const subGain = audioCtx.createGain();
-        subGain.gain.setValueAtTime(1.0, t);
-        subGain.gain.exponentialRampToValueAtTime(0.001, t + 1.0);
-        subOsc.connect(subGain); subGain.connect(audioCtx.destination);
-        subOsc.start(t); subOsc.stop(t + 1.0);
-
-        // 2. Gürültü ve Çarpışma (Impact)
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBuffer;
-        const noiseFilter = audioCtx.createBiquadFilter();
-        noiseFilter.type = 'lowpass'; noiseFilter.frequency.setValueAtTime(1000, t);
-        noiseFilter.frequency.exponentialRampToValueAtTime(100, t + 0.5);
-        const noiseGain = audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0.8, t);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
-        noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
-        noise.start(t);
+    else if (type === 'wrong') {
+        // Buzz (Hata)
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, t);
+        osc.frequency.linearRampToValueAtTime(100, t + 0.3);
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0, t + 0.3);
+        osc.start(t); osc.stop(t + 0.3);
     }
-    else if (type === 'gameover') {
-        // Karanlık Drone (Gerilim)
-        const osc = audioCtx.createOscillator(); osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(40, t); // Çok kalın
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'lowpass'; filter.frequency.setValueAtTime(200, t);
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.4, t + 2);
-        
-        osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(t);
+    else if (type === 'explosion') {
+        // Patlama (Daha tok)
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(100, t);
+        osc.frequency.exponentialRampToValueAtTime(20, t + 0.4);
+        gain.gain.setValueAtTime(0.2, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        osc.start(t); osc.stop(t + 0.4);
+    }
+    else if (type === 'win') {
+        // Zafer (Melodik)
+        playTone(523.25, 'sine', 0.1, 0);   // C
+        playTone(659.25, 'sine', 0.1, 0.15); // E
+        playTone(783.99, 'sine', 0.4, 0.3); // G
     }
 }
 
-// ... (Soru Listesi ve Değişkenler AYNI KALACAK) ...
+function playTone(freq, type, duration, delay) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + delay);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + duration);
+    osc.start(audioCtx.currentTime + delay); osc.stop(audioCtx.currentTime + delay + duration);
+}
+
+// ==========================================
+// 3. 30 SORU (COĞRAFYA)
+// ==========================================
 const allQuestions = {
     easy: [
         { q: "Where is Turkey's capital?", ans: ["Ankara", "Istanbul", "Izmir", "Bursa"], cor: "Ankara", lat: 39.93, lng: 32.86 },
@@ -125,21 +161,28 @@ const allQuestions = {
         { q: "Kora instrument?", ans: ["West Africa", "Scandinavia", "Asia", "America"], cor: "West Africa", lat: 13.45, lng: -16.57 }
     ]
 };
+
 let gameDeck = [...(allQuestions[difficulty] || allQuestions["normal"])];
 
+// ==========================================
+// 4. OYUN DEĞİŞKENLERİ
+// ==========================================
 let hp = 100;
 let score = 0;
 let isGameOver = false;
 let currentQ = null;
 let timer = 100;
 let timerInterval = null;
-let streakCount = 0;
+
+// Logic Variables
+let streakCount = 0; // Combo Sayacı
 let ceresShieldUsed = false;
 let junoCounter = 0;
 
+// Elements
 const hpBar = document.getElementById("hp-bar");
 const hpText = document.getElementById("hp-text");
-const heroImg = document.getElementById("hero-image");
+const heroImg = document.getElementById("hero-img");
 const heroBubble = document.getElementById("hero-bubble");
 const questionText = document.getElementById("question-text");
 const answersGrid = document.getElementById("answers-grid");
@@ -148,10 +191,13 @@ const timerText = document.getElementById("timer-text");
 const circle = document.querySelector('.progress-ring__circle');
 const globeContainer = document.getElementById("globe-container");
 
+// Init Hero
 heroImg.src = currentHero.img;
 speak(currentHero.quotes.start);
 
-// ... (Globe Init ve Resize AYNI KALACAK) ...
+// ==========================================
+// 5. GLOBE INIT (MERKEZLİ)
+// ==========================================
 const world = Globe()
     (globeContainer)
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
@@ -178,11 +224,15 @@ resize();
 window.addEventListener("resize", resize);
 
 // ==========================================
-// 6. OYUN DÖNGÜSÜ (GÜNCELLENDİ)
+// 6. OYUN DÖNGÜSÜ
 // ==========================================
 function loadQuestion() {
     if(isGameOver) return;
-    if(gameDeck.length === 0) { gameOver(true); return; }
+    
+    if(gameDeck.length === 0) {
+        gameOver(true);
+        return;
+    }
 
     world.ringsData([]); 
     world.atmosphereColor(currentHero.color);
@@ -192,11 +242,14 @@ function loadQuestion() {
     currentQ = gameDeck[randomIndex];
     gameDeck.splice(randomIndex, 1); 
 
+    // SYSTEM MESSAGE
     questionText.textContent = "Scanning the globe..."; 
-    answersGrid.innerHTML = ""; 
+    answersGrid.innerHTML = ""; // Butonları temizle
 
+    // 1 saniye sonra soruyu göster (Sistem efekti)
     setTimeout(() => {
         questionText.textContent = currentQ.q;
+        
         let opts = [...currentQ.ans].sort(() => Math.random() - 0.5);
         opts.forEach(opt => {
             const btn = document.createElement("button");
@@ -218,15 +271,20 @@ function checkAnswer(selected, btn) {
         playSoundEffect('correct');
         
         let earned = 100;
-        streakCount++;
+        streakCount++; // Combo arttır
 
+        // Hero Özellikleri
         if(heroName === "Mars") earned = Math.floor(earned * 1.15);
         if(heroName === "Venus") updateHealth(3);
-        if(heroName === "Juno") { junoCounter++; if(junoCounter >= 3) { timer += 3; junoCounter = 0; } }
+        if(heroName === "Juno") {
+            junoCounter++;
+            if(junoCounter >= 3) { timer += 3; junoCounter = 0; }
+        }
 
+        // COMBO KONUŞMASI (3 Doğru)
         if(streakCount === 3) {
             speak(currentHero.quotes.combo);
-            if(heroName === "Mars") earned *= 2; 
+            if(heroName === "Mars") earned *= 2; // Mars'ın özelliği
         } else {
             speak(currentHero.quotes.correct);
         }
@@ -234,41 +292,43 @@ function checkAnswer(selected, btn) {
         score += earned;
         updateHealth(0); 
         
+        // Yeşil Efekt
         world.atmosphereColor("#39ff39");
         world.ringsData([{ lat: currentQ.lat, lng: currentQ.lng, color: "#39ff39", maxR: 20, speed: 2, repeat: 200 }]);
         
         setTimeout(loadQuestion, 1500);
 
     } else {
-        // --- YANLIŞ (KORKU EFEKTLERİ) ---
+        // --- YANLIŞ ---
         btn.classList.add("wrong");
-        playSoundEffect('explosion'); // YENİ KORKUNÇ SES
+        playSoundEffect('explosion');
         
-        streakCount = 0; junoCounter = 0;
+        streakCount = 0; // Combo sıfırla
+        junoCounter = 0;
+
         let dmg = 20;
         if(heroName === "Ceres") dmg *= 0.75; 
         if(heroName === "Venus" && hp < 40) dmg *= 0.90; 
 
         updateHealth(-dmg);
         
-        if(hp < 30 && hp > 0) speak(currentHero.quotes.critical);
-        else speak(currentHero.quotes.wrong);
+        // Kritik HP Konuşması mı yoksa Normal Yanlış mı?
+        if(hp < 30 && hp > 0) {
+            speak(currentHero.quotes.critical);
+        } else {
+            speak(currentHero.quotes.wrong);
+        }
 
-        // YENİ: DÜNYA HASAR FLASH ANİMASYONU
-        globeContainer.classList.add("globe-damaged");
-        setTimeout(() => globeContainer.classList.remove("globe-damaged"), 600);
-
-        // MEVCUT SARSINTILAR
+        // Kırmızı Efekt & Sarsıntı
         globeContainer.classList.add("shake-globe");
-        setTimeout(() => globeContainer.classList.remove("shake-globe"), 600);
+        setTimeout(() => globeContainer.classList.remove("shake-globe"), 500);
         document.body.classList.add("shake-screen");
-        setTimeout(() => document.body.classList.remove("shake-screen"), 600);
+        setTimeout(() => document.body.classList.remove("shake-screen"), 500);
 
-        // KIRMIZI ATMOSFER VE HALKA
         world.atmosphereColor("red");
         world.pointOfView({ lat: currentQ.lat, lng: currentQ.lng, altitude: 2 }, 800);
         setTimeout(() => {
-            world.ringsData([{ lat: currentQ.lat, lng: currentQ.lng, color: "red", maxR: 50, speed: 10, repeat: 50 }]);
+            world.ringsData([{ lat: currentQ.lat, lng: currentQ.lng, color: "red", maxR: 40, speed: 8, repeat: 100 }]);
         }, 800);
 
         let delay = (heroName === "Juno") ? 1500 : 2500;
@@ -276,36 +336,64 @@ function checkAnswer(selected, btn) {
     }
 }
 
-// ... (UpdateHealth, Speak, Timer, GameOver AYNI KALACAK) ...
 function updateHealth(amount) {
-    hp += amount; if(hp > 100) hp = 100;
-    hpBar.style.width = hp + "%"; hpText.textContent = `SHIELD: ${Math.floor(hp)}%`;
-    if(heroName === "Ceres" && hp < 30 && !ceresShieldUsed) { hp += 15; ceresShieldUsed = true; }
+    hp += amount;
+    if(hp > 100) hp = 100;
+    
+    // UI Update
+    hpBar.style.width = hp + "%";
+    hpText.textContent = `SHIELD: ${Math.floor(hp)}%`;
+
+    // Ceres Kalkan (Tek Seferlik)
+    if(heroName === "Ceres" && hp < 30 && !ceresShieldUsed) {
+        hp += 15; 
+        ceresShieldUsed = true; 
+        // Bunu checkAnswer içinde speak olarak hallettik
+    }
+
+    // Renk
     if(hp > 60) hpBar.style.background = "linear-gradient(90deg, #00ff00, #adff2f)";
     else if(hp > 30) hpBar.style.background = "linear-gradient(90deg, #ffd700, #ff8c00)";
     else hpBar.style.background = "linear-gradient(90deg, #ff4500, #ff0000)";
+
     if(hp <= 0) { hp = 0; gameOver(false); }
 }
-function speak(text) { heroBubble.textContent = text; heroBubble.classList.add("visible"); }
+
+function speak(text) {
+    heroBubble.textContent = text;
+    heroBubble.classList.add("visible");
+}
+
+// Timer
 const circumference = circle.r.baseVal.value * 2 * Math.PI;
 circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
 function startTimer() {
     timerInterval = setInterval(() => {
-        if(isGameOver) return; timer--; timerText.textContent = timer;
+        if(isGameOver) return;
+        timer--;
+        timerText.textContent = timer;
         const offset = circumference - (timer / 100) * circumference;
         circle.style.strokeDashoffset = offset;
         if(timer <= 0) gameOver(false);
     }, 1000);
 }
 startTimer();
+
 function gameOver(win) {
-    isGameOver = true; clearInterval(timerInterval);
+    isGameOver = true;
+    clearInterval(timerInterval);
     finalScreen.classList.remove("hidden");
     document.getElementById("final-score").textContent = score;
+    
+    // REPLİK SEÇİMİ
     const endQuote = win ? currentHero.quotes.win : currentHero.quotes.fail;
     document.getElementById("final-hero-msg").textContent = `"${endQuote}"`;
+    
     document.getElementById("final-title").textContent = win ? "VICTORY" : "GAME OVER";
     document.getElementById("final-title").style.color = win ? "#39ff39" : "red";
-    playSoundEffect('gameover');
+    
+    if(win) playSoundEffect('win'); else playSoundEffect('gameover');
 }
+
 loadQuestion();
