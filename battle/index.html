@@ -3,56 +3,55 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planet Smash – Battle</title>
+    <title>Planet Smash – Battle Mode</title>
     <link rel="stylesheet" href="style.css" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
     <script src="//unpkg.com/globe.gl"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <canvas id="starfield" style="position: fixed; top:0; left:0; z-index: -1;"></canvas>
+    <canvas id="starfield"></canvas>
 
-    <div id="health-bar-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 300px; height: 20px; background: #333; border-radius: 10px; overflow: hidden; z-index: 10;">
-        <div id="health-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ff4d4d, #ff9e4d);"></div>
+    <div id="health-bar-container">
+        <div id="health-bar"></div>
     </div>
 
-    <div id="globe-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); z-index: 1;"></div>
+    <div id="globe-container"></div>
 
-    <div id="question-area" style="position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; width: 80%; max-width: 600px;">
-        <p id="hero-status" style="color: #00eaff; font-family: 'Orbitron', sans-serif; margin-bottom: 10px;">Prepare yourself...</p>
-        <h2 id="question-text" style="color: white; font-family: 'Roboto', sans-serif; margin-bottom: 20px;">Loading question...</h2>
-        <div id="answers-container" style="display: flex; flex-direction: column; gap: 10px;">
-            </div>
+    <div id="question-area" class="hidden">
+        <p id="hero-status">Target Acquired...</p>
+        <h2 id="question-text">Loading...</h2>
+        <div id="answers-container"></div>
     </div>
 
-
-    <div id="difficulty-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <h1 style="color: white; font-family: 'Orbitron', sans-serif; font-size: 3rem; margin-bottom: 50px; text-shadow: 0 0 10px #00eaff;">SELECT THREAT LEVEL</h1>
+    <div id="difficulty-screen">
+        <h1 class="main-title">SELECT DIFFICULTY</h1>
         
-        <div style="display: flex; gap: 30px;">
-            <div class="diff-card" onclick="startGame('easy')" style="border: 3px solid #4dff88; box-shadow: 0 0 20px #4dff88; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
-                <h2 style="font-family: 'Orbitron'; margin-top: 0;">EASY</h2>
-                <p style="font-family: 'Roboto'; color: #ccc;">Casual Orbit</p>
-            </div>
-            
-            <div class="diff-card" onclick="startGame('normal')" style="border: 3px solid #4da6ff; box-shadow: 0 0 20px #4da6ff; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
-                <h2 style="font-family: 'Orbitron'; margin-top: 0;">NORMAL</h2>
-                <p style="font-family: 'Roboto'; color: #ccc;">Standard Galaxy</p>
+        <div class="cards-container">
+            <div class="card easy" onclick="startGame('easy')">
+                <h2>EASY</h2>
+                <p>Relaxed pace, fewer penalties.</p>
             </div>
 
-            <div class="diff-card" onclick="startGame('hard')" style="border: 3px solid #ff4d4d; box-shadow: 0 0 20px #ff4d4d; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
-                <h2 style="font-family: 'Orbitron'; margin-top: 0;">HARD</h2>
-                <p style="font-family: 'Roboto'; color: #ccc;">Solar Storm</p>
+            <div class="card normal" onclick="startGame('normal')">
+                <h2>NORMAL</h2>
+                <p>Balanced difficulty.<br>Recommended.</p>
             </div>
-             <div class="diff-card" onclick="startGame('chaos')" style="border: 3px solid #a64dff; box-shadow: 0 0 20px #a64dff; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
-                <h2 style="font-family: 'Orbitron'; margin-top: 0;">CHAOS</h2>
-                <p style="font-family: 'Roboto'; color: #ccc;">Void Mode</p>
+
+            <div class="card hard" onclick="startGame('hard')">
+                <h2>HARD</h2>
+                <p>Fast, intense and punishing.</p>
             </div>
         </div>
+
+        <button class="back-btn" onclick="location.reload()">Back</button>
     </div>
 
+    <div id="game-over-screen" class="hidden">
+        <h1 style="color: red; font-size: 3rem;">GAME OVER</h1>
+        <p style="color: white;">The planet has been destroyed.</p>
+        <button class="back-btn" onclick="location.reload()">RESTART</button>
+    </div>
 
     <script src="game.js"></script>
 </body>

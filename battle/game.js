@@ -1,171 +1,195 @@
 // =====================================
-// OYUN DEĞİŞKENLERİ
+// 1. AYARLAR & DEĞİŞKENLER
 // =====================================
-let gameState = {
-    difficulty: 'normal',
-    health: 100,
-    isPlaying: false
-};
+let health = 100;
+let isGameOver = false;
+let currentDifficulty = 'normal';
 
-// HTML Elemanlarını Seç
 const difficultyScreen = document.getElementById("difficulty-screen");
+const questionArea = document.getElementById("question-area");
 const healthBar = document.getElementById("health-bar");
 const questionText = document.getElementById("question-text");
 const answersContainer = document.getElementById("answers-container");
 const heroStatus = document.getElementById("hero-status");
+const gameOverScreen = document.getElementById("game-over-screen");
 
 // =====================================
-// GLOBE INIT (DÜNYA AYARLARI) - HATA DÜZELTİLDİ
+// 2. DÜNYA (GLOBE) AYARLARI
 // =====================================
-const worldElement = document.getElementById("globe-container");
-
-// Globe'u başlat
-const world = Globe()(worldElement)
+const world = Globe()
+    (document.getElementById("globe-container"))
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
     .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-    .backgroundColor("rgba(0,0,0,0)") // Arka plan şeffaf
-    .showAtmosphere(true);
+    .backgroundColor("rgba(0,0,0,0)")
+    .showAtmosphere(true)
+    .atmosphereColor("#3a228a")
+    .atmosphereAltitude(0.15)
+    // --- BOMBA / SALDIRI EFEKTİ ---
+    .ringColor(() => "red")
+    .ringMaxRadius(30)
+    .ringPropagationSpeed(8)
+    .ringRepeatPeriod(200);
 
-// ÖNEMLİ DÜZELTME: autoRotate'i zincirleme (chaining) dışına aldık.
-// Konsol hatası burada çözülüyor.
+// Kontroller
 world.controls().autoRotate = true;
-world.controls().autoRotateSpeed = 0.5;
-world.controls().enableZoom = false; // Zoom'u kapatalım ki oyun bozulmasın
+world.controls().autoRotateSpeed = 0.6;
+world.controls().enableZoom = false;
 
-// Ekran Boyutlandırma
 function resize() {
-    // Dünyayı ekranın ortasına uygun boyutta yerleştir
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.6;
+    const size = Math.min(window.innerWidth, window.innerHeight) * 0.55;
     world.width(size);
     world.height(size);
 }
-// İlk açılışta ve ekran değişince çalıştır
 resize();
 window.addEventListener("resize", resize);
 
-
 // =====================================
-// SORU HAVUZU (Örnek)
+// 3. SORULAR (SENİN İSTEDİĞİN LİSTE)
 // =====================================
-const questions = [
-    {
-        question: "Which planet is known as the Red Planet?",
-        answers: ["Venus", "Mars", "Jupiter", "Saturn"],
-        correct: "Mars"
-    },
-    {
-        question: "What lies at the center of our galaxy?",
-        answers: ["A Neutron Star", "A Black Hole", "A White Dwarf", "Another Sun"],
-        correct: "A Black Hole"
-    },
-    {
-        question: "Which is the largest planet in the solar system?",
-        answers: ["Earth", "Saturn", "Jupiter", "Neptune"],
-        correct: "Jupiter"
-    }
+const questionData = [
+    { question: "Where is Turkey's capital located?", answers: ["Ankara", "Istanbul", "Izmir", "Bursa"], correct: "Ankara", lat: 39.93, lng: 32.86 },
+    { question: "What is the capital of France?", answers: ["Paris", "Lyon", "Nice", "Marseille"], correct: "Paris", lat: 48.85, lng: 2.35 },
+    { question: "What is the capital of Japan?", answers: ["Seoul", "Tokyo", "Beijing", "Osaka"], correct: "Tokyo", lat: 35.68, lng: 139.69 },
+    { question: "Penguins mainly live near which continent?", answers: ["Africa", "Antarctica", "Europe", "Asia"], correct: "Antarctica", lat: -75, lng: 0 },
+    { question: "Where is the Sahara Desert located?", answers: ["Asia", "Africa", "Australia", "South America"], correct: "Africa", lat: 23, lng: 13 },
+    { question: "Carnival is famously held in which country?", answers: ["Mexico", "Spain", "Brazil", "Portugal"], correct: "Brazil", lat: -22.90, lng: -43.17 },
+    { question: "Where are the Pyramids of Giza?", answers: ["Morocco", "Egypt", "Saudi Arabia", "Iran"], correct: "Egypt", lat: 29.97, lng: 31.13 },
+    { question: "Sushi belongs to which country?", answers: ["China", "Japan", "Thailand", "Vietnam"], correct: "Japan", lat: 35.68, lng: 139.69 },
+    { question: "Tango originally developed in?", answers: ["Rio", "Buenos Aires", "Madrid", "Lisbon"], correct: "Buenos Aires", lat: -34.60, lng: -58.38 },
+    { question: "Paella is from which country?", answers: ["Italy", "Spain", "Greece", "France"], correct: "Spain", lat: 39.46, lng: -0.37 },
+    { question: "Kimchi belongs to which culture?", answers: ["Japan", "China", "South Korea", "Malaysia"], correct: "South Korea", lat: 37.56, lng: 126.97 },
+    { question: "Baklava is strongly linked to?", answers: ["Turkey", "Norway", "Brazil", "Canada"], correct: "Turkey", lat: 41.00, lng: 28.97 },
+    { question: "Amazon rainforest mainly located in?", answers: ["Brazil", "Peru", "Colombia", "Bolivia"], correct: "Brazil", lat: -3.4, lng: -62 },
+    { question: "The tundra of Siberia is in?", answers: ["Canada", "Russia", "Greenland", "Norway"], correct: "Russia", lat: 66.5, lng: 90 },
+    { question: "Galapagos Islands belong to?", answers: ["Peru", "Chile", "Ecuador", "Panama"], correct: "Ecuador", lat: -0.95, lng: -90.96 },
+    { question: "Serengeti grasslands are in?", answers: ["Kenya", "South Africa", "Tanzania", "Namibia"], correct: "Tanzania", lat: -2.33, lng: 34.83 },
+    { question: "Where is Angkor Wat located?", answers: ["Thailand", "Cambodia", "Laos", "Myanmar"], correct: "Cambodia", lat: 13.41, lng: 103.86 }
 ];
 
+let currentQuestion = null;
 
 // =====================================
-// OYUNU BAŞLATMA FONKSİYONU
+// 4. OYUNU BAŞLAT (ZORLUK SEÇİMİ)
 // =====================================
-// HTML'deki onclick="startGame('...')" bu fonksiyonu çağırır.
-window.startGame = function(selectedDifficulty) {
-    console.log("Oyun başlatılıyor. Zorluk:", selectedDifficulty);
-    
-    gameState.difficulty = selectedDifficulty;
-    gameState.isPlaying = true;
-    gameState.health = 100;
+// HTML'deki onclick="startGame('easy')" burayı çağırır
+window.startGame = function(difficulty) {
+    console.log("Game Starting: " + difficulty);
+    currentDifficulty = difficulty;
 
-    // 1. Zorluk ekranını gizle (Efektli geçiş için opacity kullanabiliriz ama şimdilik direkt gizliyoruz)
+    // 1. Zorluk ekranını gizle
     difficultyScreen.style.display = "none";
 
-    // 2. İlk soruyu yükle
-    heroStatus.textContent = "Hostiles detected! Engage!";
-    loadNextQuestion();
+    // 2. Oyun arayüzünü aç
+    questionArea.classList.remove("hidden");
+
+    // 3. Soruları yükle
+    loadQuestion();
 }
 
-
 // =====================================
-// SORU YÜKLEME
+// 5. OYUN FONKSİYONLARI
 // =====================================
-function loadNextQuestion() {
-    if (gameState.health <= 0) {
-        endGame();
-        return;
-    }
 
-    // Rastgele bir soru seç
-    const q = questions[Math.floor(Math.random() * questions.length)];
+function loadQuestion() {
+    if (isGameOver) return;
 
-    questionText.textContent = q.question;
-    answersContainer.innerHTML = ""; // Önceki butonları temizle
+    // Efektleri temizle
+    world.ringsData([]); 
+    world.pointOfView({ altitude: 2.5 }, 1000); // Kamerayı uzaklaştır
 
-    // Şıkları karıştır
-    let shuffledAnswers = [...q.answers].sort(() => Math.random() - 0.5);
+    // Soru Seç
+    currentQuestion = questionData[Math.floor(Math.random() * questionData.length)];
 
-    shuffledAnswers.forEach(ans => {
+    questionText.textContent = currentQuestion.question;
+    answersContainer.innerHTML = "";
+    heroStatus.textContent = "Waiting for input...";
+    heroStatus.style.color = "#00eaff";
+
+    // Şıkları Karıştır
+    let shuffled = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(ans => {
         const btn = document.createElement("button");
-        // Basit bir stil verelim (CSS dosyan varsa oradan çeker)
-        btn.style.padding = "15px 25px";
-        btn.style.margin = "5px";
-        btn.style.fontSize = "18px";
-        btn.style.cursor = "pointer";
-        btn.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-        btn.style.color = "#00eaff";
-        btn.style.border = "2px solid #00eaff";
-        btn.style.borderRadius = "10px";
-        btn.style.fontFamily = "'Orbitron', sans-serif";
-
+        btn.className = "answer-btn";
         btn.textContent = ans;
-        
-        // Tıklanınca cevabı kontrol et
-        btn.onclick = () => checkAnswer(ans === q.correct);
-        
+        btn.onclick = () => checkAnswer(ans, btn);
         answersContainer.appendChild(btn);
     });
 }
 
-// =====================================
-// CEVAP KONTROLÜ
-// =====================================
-function checkAnswer(isCorrect) {
-    const buttons = answersContainer.querySelectorAll("button");
-    buttons.forEach(b => b.disabled = true); // Butonları kilitle
+function checkAnswer(selectedAns, btnElement) {
+    if (isGameOver) return;
 
-    if (isCorrect) {
-        heroStatus.textContent = "Target eliminated! Good shot.";
-        heroStatus.style.color = "#4dff88";
-        // Zorluğa göre puan ekleme vs. buraya gelir
+    const allBtns = document.querySelectorAll(".answer-btn");
+    allBtns.forEach(b => b.disabled = true);
+
+    if (selectedAns === currentQuestion.correct) {
+        // --- DOĞRU ---
+        btnElement.classList.add("correct");
+        heroStatus.textContent = "CORRECT! Target Secured.";
+        heroStatus.style.color = "#39ff39";
+        setTimeout(loadQuestion, 1500);
+
     } else {
-        heroStatus.textContent = "Missed! We took damage!";
-        heroStatus.style.color = "#ff4d4d";
+        // --- YANLIŞ (SALDIRI!) ---
+        btnElement.classList.add("wrong");
         
-        // Can azaltma
-        gameState.health -= 20;
-        if(gameState.health < 0) gameState.health = 0;
-        healthBar.style.width = gameState.health + "%";
+        // Doğruyu göster
+        allBtns.forEach(b => {
+            if (b.textContent === currentQuestion.correct) b.classList.add("correct");
+        });
 
-        // Dünyayı sars (Basit efekt)
-        worldElement.style.transform = "translate(-50%, -60%) translateX(10px)";
+        heroStatus.textContent = "WRONG! IMPACT DETECTED!";
+        heroStatus.style.color = "red";
+
+        // Zorluğa göre hasar
+        let damage = 20;
+        if(currentDifficulty === 'hard') damage = 40;
+        if(currentDifficulty === 'easy') damage = 10;
+        
+        takeDamage(damage);
+
+        // --- SALDIRI ANİMASYONU ---
+        // 1. Oraya odaklan
+        world.pointOfView({ 
+            lat: currentQuestion.lat, 
+            lng: currentQuestion.lng, 
+            altitude: 1.5 
+        }, 800);
+
+        // 2. Patlama efekti (Halka)
         setTimeout(() => {
-            worldElement.style.transform = "translate(-50%, -60%) translateX(-10px)";
-        }, 100);
-        setTimeout(() => {
-            worldElement.style.transform = "translate(-50%, -60%)";
-        }, 200);
+            world.ringsData([{
+                lat: currentQuestion.lat,
+                lng: currentQuestion.lng
+            }]);
+            
+            // Ekran sarsıntısı
+            document.body.style.transform = "translate(5px, 5px)";
+            setTimeout(() => document.body.style.transform = "translate(-5px, -5px)", 50);
+            setTimeout(() => document.body.style.transform = "translate(0, 0)", 100);
+
+        }, 800);
+
+        setTimeout(loadQuestion, 3000);
     }
-
-    // 1.5 saniye sonra yeni soru
-    setTimeout(loadNextQuestion, 1500);
 }
 
-// =====================================
-// OYUN BİTİŞİ
-// =====================================
-function endGame() {
-    questionText.textContent = "GAME OVER";
-    answersContainer.innerHTML = "";
-    heroStatus.textContent = "The planet has fallen...";
-    heroStatus.style.color = "red";
+function takeDamage(amount) {
+    health -= amount;
+    if (health < 0) health = 0;
+    
+    healthBar.style.width = health + "%";
+    
+    if (health <= 30) {
+        healthBar.style.background = "red";
+    }
+
+    if (health === 0) {
+        isGameOver = true;
+        setTimeout(() => {
+            gameOverScreen.classList.remove("hidden");
+            world.atmosphereColor("red");
+        }, 1000);
+    }
 }
