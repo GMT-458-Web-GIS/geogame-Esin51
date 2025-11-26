@@ -1,4 +1,25 @@
-/* BASE SETUP */
+/* --------------------------------------------------------
+   READ MODE FROM LOCALSTORAGE
+-------------------------------------------------------- */
+const mode = localStorage.getItem("ps_gameMode") || "normal";
+
+let damage = 20;       
+let questionDelay = 1200;
+
+// MODE EFFECTS
+if (mode === "easy") {
+    damage = 10;
+    questionDelay = 1600;
+}
+if (mode === "hard") {
+    damage = 30;
+    questionDelay = 900;
+}
+
+
+/* --------------------------------------------------------
+   BASE SETUP
+-------------------------------------------------------- */
 let health = 100;
 
 const questionText = document.getElementById("question-text");
@@ -7,7 +28,9 @@ const healthBar = document.getElementById("health-bar");
 const heroStatus = document.getElementById("hero-status");
 
 
-/* SAMPLE QUESTIONS FOR NOW */
+/* --------------------------------------------------------
+   TEMP QUESTIONS (GEÇİCİ)
+-------------------------------------------------------- */
 const questions = [
     {
         question: "Which planet is closest to the Sun?",
@@ -18,47 +41,92 @@ const questions = [
         question: "What is the capital of Japan?",
         answers: ["Seoul", "Tokyo", "Beijing", "Bangkok"],
         correct: "Tokyo"
+    },
+    {
+        question: "Which gas do plants absorb?",
+        answers: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Helium"],
+        correct: "Carbon Dioxide"
     }
 ];
 
 
-/* SHOW QUESTION */
+/* --------------------------------------------------------
+   LOAD A QUESTION
+-------------------------------------------------------- */
 function loadQuestion() {
+
+    if (health <= 0) {
+        endGame(false);
+        return;
+    }
+
     const q = questions[Math.floor(Math.random() * questions.length)];
 
     questionText.textContent = q.question;
     answersContainer.innerHTML = "";
+    heroStatus.textContent = "Prepare yourself!";
+    heroStatus.style.color = "#00eaff";
 
     q.answers.forEach(ans => {
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.textContent = ans;
 
-        btn.onclick = () => checkAnswer(ans === q.correct);
+        btn.onclick = () => {
+            checkAnswer(ans === q.correct);
+        };
+
         answersContainer.appendChild(btn);
     });
 }
 
 
-/* ANSWER CHECK */
+/* --------------------------------------------------------
+   CHECK ANSWER
+-------------------------------------------------------- */
 function checkAnswer(isCorrect) {
+
     if (isCorrect) {
         heroStatus.textContent = "Nice hit!";
         heroStatus.style.color = "#39ff39";
+
     } else {
-        health -= 20;
+        // APPLY DAMAGE BASED ON MODE
+        health -= damage;
+        if (health < 0) health = 0;
+
+        // UPDATE HEALTH BAR
         healthBar.style.width = health + "%";
 
-        if (health < 60) healthBar.style.background = "yellow";
-        if (health < 30) healthBar.style.background = "red";
+        if (health <= 60 && health > 30) healthBar.style.background = "yellow";
+        if (health <= 30) healthBar.style.background = "red";
 
         heroStatus.textContent = "Wrong! Earth is damaged!";
         heroStatus.style.color = "red";
+
+        // If HP reaches 0 → game over
+        if (health <= 0) {
+            setTimeout(() => endGame(false), 800);
+            return;
+        }
     }
 
-    setTimeout(loadQuestion, 1200);
+    // NEXT QUESTION
+    setTimeout(loadQuestion, questionDelay);
 }
 
 
-/* INIT */
-setTimeout(loadQuestion, 1200);
+/* --------------------------------------------------------
+   END GAME
+-------------------------------------------------------- */
+function endGame(isWin) {
+    questionText.textContent = isWin ? "YOU SAVED EARTH!" : "EARTH IS DESTROYED!";
+    answersContainer.innerHTML = "";
+    heroStatus.textContent = "";
+}
+
+
+/* --------------------------------------------------------
+   START GAME
+-------------------------------------------------------- */
+setTimeout(loadQuestion, 1000);

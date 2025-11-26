@@ -29,14 +29,13 @@ document.addEventListener("click", (e) => {
     const box = e.target.closest(".char-box");
     if (!box) return;
 
-    // Remove old selection
+    // Remove previous selection
     document.querySelectorAll(".char-box").forEach(b => b.classList.remove("selected"));
 
-    // Add new selection
+    // Mark as selected
     box.classList.add("selected");
     selectedHero = box.dataset.hero;
 
-    // Play sound
     if (selectSound) {
         selectSound.currentTime = 0;
         selectSound.play().catch(()=>{});
@@ -49,17 +48,28 @@ function confirmHero() {
         return;
     }
 
-    // Save data for battle page
     const name = document.getElementById("playerName").value.trim() || "Player";
+
+    // Save to localStorage
     localStorage.setItem("ps_playerName", name);
     localStorage.setItem("ps_selectedHero", selectedHero);
 
-    // GO TO BATTLE PAGE
+    // Go to MODE SELECT page
+    showPage("page-mode");
+}
+
+/* --------------------------------------------------------
+   MODE SELECT
+-------------------------------------------------------- */
+function chooseMode(mode) {
+    localStorage.setItem("ps_gameMode", mode);
+
+    // Go to battle page
     window.location.href = "battle/index.html";
 }
 
 /* --------------------------------------------------------
-   STARFIELD (A + D Versions Combined)
+   STARFIELD (A + D version combined)
 -------------------------------------------------------- */
 const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
@@ -83,8 +93,8 @@ function initStars(count = 250) {
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
             speed: 40 + Math.random() * 80,
-            size: Math.random() * 2 + .5
-        })
+            size: Math.random() * 2 + 0.5
+        });
     }
 }
 initStars();
@@ -93,10 +103,10 @@ function newShootingStar() {
     shooting.push({
         x: Math.random() * canvas.width,
         y: -50,
-        vx: -300 - Math.random()*200,
-        vy: 300 + Math.random()*200,
+        vx: -300 - Math.random() * 200,
+        vy: 300 + Math.random() * 200,
         life: 0,
-        maxLife: 1 + Math.random()*1.5
+        maxLife: 1 + Math.random() * 1.5
     });
 }
 
@@ -107,9 +117,10 @@ let nextStar = 1.5;
 function loop(t) {
     let dt = (t - tOld) / 1000;
     tOld = t;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // normal stars
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Normal stars
     ctx.fillStyle = "white";
     for (let s of stars) {
         s.y += s.speed * dt;
@@ -118,35 +129,38 @@ function loop(t) {
             s.x = Math.random() * canvas.width;
         }
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // shooting stars timer
+    // Shooting star timer
     timer += dt;
     if (timer > nextStar) {
         newShootingStar();
         timer = 0;
-        nextStar = 1 + Math.random()*2.5;
+        nextStar = 1 + Math.random() * 2.5;
     }
 
-    // draw shooting stars
-    for (let i = shooting.length-1; i >= 0; i--) {
+    // Draw shooting stars
+    for (let i = shooting.length - 1; i >= 0; i--) {
         let sh = shooting[i];
         sh.life += dt;
+
         if (sh.life > sh.maxLife) {
-            shooting.splice(i,1);
+            shooting.splice(i, 1);
             continue;
         }
+
         sh.x += sh.vx * dt;
         sh.y += sh.vy * dt;
 
-        let alpha = 1 - sh.life/sh.maxLife;
+        let alpha = 1 - sh.life / sh.maxLife;
         ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
         ctx.lineWidth = 2;
+
         ctx.beginPath();
         ctx.moveTo(sh.x, sh.y);
-        ctx.lineTo(sh.x - sh.vx*0.15, sh.y - sh.vy*0.15);
+        ctx.lineTo(sh.x - sh.vx * 0.15, sh.y - sh.vy * 0.15);
         ctx.stroke();
     }
 
