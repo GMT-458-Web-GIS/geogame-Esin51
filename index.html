@@ -128,4 +128,30 @@
 </body>
 </html>
 
+<!-- PAGE 4: MODE SELECT -->
+<div id="page-mode" class="page">
+    <h1>SELECT DIFFICULTY</h1>
 
+    <div class="mode-container">
+
+        <div class="mode-box easy" onclick="chooseMode('easy')">
+            <div class="mode-title">EASY</div>
+            <p>Relaxed pace, fewer penalties.</p>
+        </div>
+
+        <div class="mode-box normal" onclick="chooseMode('normal')">
+            <div class="mode-title">NORMAL</div>
+            <p>Balanced difficulty. Recommended.</p>
+        </div>
+
+        <div class="mode-box hard" onclick="chooseMode('hard')">
+            <div class="mode-title">HARD</div>
+            <p>Fast, intense and punishing.</p>
+        </div>
+
+    </div>
+
+    <div class="btn-row">
+        <button class="btn-secondary" onclick="showPage('page-characters')">Back</button>
+    </div>
+</div>
