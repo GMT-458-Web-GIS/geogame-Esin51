@@ -3,61 +3,56 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planet Smash: AAA Battle Mode</title>
+    <title>Planet Smash – Battle</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://unpkg.com/globe.gl"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+    <script src="//unpkg.com/globe.gl"></script>
 </head>
+
 <body>
-    <div id="dynamic-background"></div>
-    <canvas id="starfield"></canvas>
+    <canvas id="starfield" style="position: fixed; top:0; left:0; z-index: -1;"></canvas>
 
-    <div id="hp-container">
-        <div id="hp-bar"></div>
-        <div id="hp-text">SHIELD: 100%</div>
+    <div id="health-bar-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 300px; height: 20px; background: #333; border-radius: 10px; overflow: hidden; z-index: 10;">
+        <div id="health-bar" style="width: 100%; height: 100%; background: linear-gradient(90deg, #ff4d4d, #ff9e4d);"></div>
     </div>
 
-    <div id="hero-container">
-        <img id="hero-image" src="" alt="Hero"> 
-        <div id="hero-bubble">
-            <span id="hero-msg">System initialized. Waiting for hostiles.</span>
-        </div>
-        <div id="timer-ring">
-            <svg class="progress-ring" width="60" height="60">
-                <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
-            </svg>
-            <div id="timer-text">15</div>
-        </div>
+    <div id="globe-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); z-index: 1;"></div>
+
+    <div id="question-area" style="position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; width: 80%; max-width: 600px;">
+        <p id="hero-status" style="color: #00eaff; font-family: 'Orbitron', sans-serif; margin-bottom: 10px;">Prepare yourself...</p>
+        <h2 id="question-text" style="color: white; font-family: 'Roboto', sans-serif; margin-bottom: 20px;">Loading question...</h2>
+        <div id="answers-container" style="display: flex; flex-direction: column; gap: 10px;">
+            </div>
     </div>
 
-    <div id="globe-container"></div>
 
-    <div id="battle-ui" class="ui-theme-default">
-        <div id="question-box">
-            <div id="enemy-indicator">⚠️ DETECTING HOSTILE: <span id="enemy-name">SCANNING...</span></div>
-            <p id="question-text">Loading battle data...</p>
-        </div>
+    <div id="difficulty-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h1 style="color: white; font-family: 'Orbitron', sans-serif; font-size: 3rem; margin-bottom: 50px; text-shadow: 0 0 10px #00eaff;">SELECT THREAT LEVEL</h1>
         
-        <div id="answers-grid">
+        <div style="display: flex; gap: 30px;">
+            <div class="diff-card" onclick="startGame('easy')" style="border: 3px solid #4dff88; box-shadow: 0 0 20px #4dff88; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
+                <h2 style="font-family: 'Orbitron'; margin-top: 0;">EASY</h2>
+                <p style="font-family: 'Roboto'; color: #ccc;">Casual Orbit</p>
             </div>
-    </div>
-
-    <div id="difficulty-screen">
-        <h1 class="glitch-title">SELECT THREAT LEVEL</h1>
-        <div id="difficulty-options"></div>
-    </div>
-
-    <div id="final-screen" class="hidden">
-        <div id="final-content">
-            <h1 id="final-title">VICTORY</h1>
-            <div id="final-score-box">
-                <p>SCORE: <span id="final-score">0</span></p>
-                <p>ACCURACY: <span id="final-acc">0%</span></p>
+            
+            <div class="diff-card" onclick="startGame('normal')" style="border: 3px solid #4da6ff; box-shadow: 0 0 20px #4da6ff; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
+                <h2 style="font-family: 'Orbitron'; margin-top: 0;">NORMAL</h2>
+                <p style="font-family: 'Roboto'; color: #ccc;">Standard Galaxy</p>
             </div>
-            <p id="final-hero-msg">"..."</p>
-            <button id="restart-btn" onclick="location.reload()">RE-ENGAGE</button>
+
+            <div class="diff-card" onclick="startGame('hard')" style="border: 3px solid #ff4d4d; box-shadow: 0 0 20px #ff4d4d; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
+                <h2 style="font-family: 'Orbitron'; margin-top: 0;">HARD</h2>
+                <p style="font-family: 'Roboto'; color: #ccc;">Solar Storm</p>
+            </div>
+             <div class="diff-card" onclick="startGame('chaos')" style="border: 3px solid #a64dff; box-shadow: 0 0 20px #a64dff; padding: 30px; border-radius: 20px; cursor: pointer; text-align: center; color: white; width: 200px;">
+                <h2 style="font-family: 'Orbitron'; margin-top: 0;">CHAOS</h2>
+                <p style="font-family: 'Roboto'; color: #ccc;">Void Mode</p>
+            </div>
         </div>
     </div>
+
 
     <script src="game.js"></script>
 </body>
