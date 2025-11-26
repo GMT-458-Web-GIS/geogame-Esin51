@@ -1,37 +1,24 @@
-/* ------------------------------
-   GLOBAL
---------------------------------*/
-* {
-    box-sizing: border-box;
-}
-
+/* GLOBAL */
 body {
     margin: 0;
+    padding: 0;
+    overflow: hidden;
     background: black;
     color: white;
     font-family: Arial, sans-serif;
-    overflow: hidden;
 }
 
-/* ------------------------------
-   YILDIZLI ARKA PLAN
---------------------------------*/
+/* STARFIELD CANVAS */
 #starfield {
     position: fixed;
     inset: 0;
-    width: 100%;
-    height: 100%;
     z-index: 0;
-    pointer-events: none;
 }
 
-/* ------------------------------
-   HEALTH BAR
---------------------------------*/
+/* HEALTH BAR */
 #health-bar-container {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     height: 22px;
     background: #222;
@@ -45,25 +32,20 @@ body {
     transition: width 0.3s, background 0.3s;
 }
 
-/* ------------------------------
-   HERO (SAĞ ALTTA)
---------------------------------*/
+/* HERO */
 #hero-image {
-    position: fixed;
-    bottom: 25px;
+    position: absolute;
+    bottom: 30px;
     right: 60px;
     width: 330px;
-    height: auto;
-    filter: drop-shadow(0 0 25px rgba(255,120,0,0.6));
-    transition: 0.2s;
-    z-index: 25;
+    z-index: 11;
+    filter: drop-shadow(0 0 25px rgba(255,80,0,0.6));
 }
 
-/* Şaşırma animasyonu */
+/* HERO SHAKE */
 .hero-damage {
     animation: heroShake 0.3s;
 }
-
 @keyframes heroShake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-14px); }
@@ -72,66 +54,53 @@ body {
     100% { transform: translateX(0); }
 }
 
-/* ------------------------------
-   GLOBE (ORTA)
---------------------------------*/
+/* GLOBE CENTER */
 #globe-container {
-    position: fixed;
-    top: 16%;
+    position: absolute;
+    top: 15%;
     left: 50%;
     transform: translateX(-50%);
-    width: 520px;
-    height: 520px;
-    z-index: 10;
-    pointer-events: none; /* tıklanmasın */
+    z-index: 5;
+    pointer-events: none;
 }
 
-/* ------------------------------
-   SORU ALANI (ALT ORTA)
---------------------------------*/
+/* QUESTION AREA */
 #question-area {
-    position: fixed;
-    top: 72%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    position: absolute;
+    top: 70%;
     width: 100%;
-    z-index: 30;
+    text-align: center;
+    z-index: 20;
 }
 
-/* feedback yazısı */
-#hero-status {
+.status-text {
     font-size: 22px;
-    margin-bottom: 8px;
-    text-shadow: 0 0 10px #00f6ff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px cyan;
 }
 
-/* soru metni */
 #question-text {
-    font-size: 26px;
-    margin-bottom: 18px;
-    color: white;
+    font-size: 28px;
+    margin-bottom: 15px;
     text-shadow: 0 0 10px white;
 }
 
-/* ------------------------------
-   CEVAP BUTONLARI
---------------------------------*/
+/* ANSWER BUTTONS */
 .answer-btn {
     display: block;
-    width: 320px;
     margin: 10px auto;
+    width: 330px;
     padding: 14px;
     font-size: 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    background: #1b1b1b;
+    background: #1a1a1a;
     border: 2px solid #00eaff;
+    border-radius: 12px;
     color: white;
+    cursor: pointer;
     transition: 0.2s;
 }
 
 .answer-btn:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
     background: #00eaff33;
 }

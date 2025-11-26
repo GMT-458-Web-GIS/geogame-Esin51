@@ -1,5 +1,5 @@
 /* --------------------------------------------------------
-   HERO YÜKLE
+   HERO LOAD
 -------------------------------------------------------- */
 const heroImage = document.getElementById("hero-image");
 const selectedHero = localStorage.getItem("ps_selectedHero") || "Ceres";
@@ -16,22 +16,20 @@ if (heroImages[selectedHero]) {
 }
 
 /* --------------------------------------------------------
-   GLOBE.GL DÜNYA OLUŞTUR
+   GLOBE.GL SETUP
 -------------------------------------------------------- */
 const globeContainer = document.getElementById("globe-container");
 
-// Globe.gl instance
 const world = Globe()(globeContainer)
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
     .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-    .backgroundColor("rgba(0,0,0,0)")   // arkası transparan (yıldızlar görünsün)
+    .backgroundColor("rgba(0,0,0,0)")
     .showAtmosphere(true)
     .atmosphereColor("#3cf")
     .atmosphereAltitude(0.25)
     .autoRotate(true)
     .autoRotateSpeed(0.45);
 
-// Dünya boyutunu ekrana göre ayarla
 function resizeGlobe() {
     const size = Math.min(window.innerWidth, window.innerHeight) * 0.55;
     world.width(size);
@@ -40,7 +38,7 @@ function resizeGlobe() {
 resizeGlobe();
 window.addEventListener("resize", resizeGlobe);
 
-// ARC + RING verileri (vurulan hedefler)
+/* ARC + RING data */
 let arcData = [];
 let ringData = [];
 
@@ -66,9 +64,8 @@ world
     .ringRepeatPeriod("repeatPeriod")
     .ringColor("color");
 
-/* Dünya üzerinde patlama efekti ekle */
+/* ADD HIT EFFECT */
 function addHitEffect(lat, lng) {
-    // Hero'nun uzaydan vurduğu varsayılan konum
     const heroLat = 0;
     const heroLng = -150;
 
@@ -93,7 +90,6 @@ function addHitEffect(lat, lng) {
     ringData.push(ring);
     world.ringsData(ringData);
 
-    // bir süre sonra sil
     setTimeout(() => {
         arcData = arcData.filter(a => a !== arc);
         world.arcsData(arcData);
@@ -106,7 +102,7 @@ function addHitEffect(lat, lng) {
 }
 
 /* --------------------------------------------------------
-   MOD / ZORLUK
+   MODE
 -------------------------------------------------------- */
 const mode = localStorage.getItem("ps_gameMode") || "normal";
 
@@ -115,7 +111,7 @@ let questionDelay = 1200;
 
 if (mode === "easy") {
     damage = 10;
-    questionDelay = 1600;
+    questionDelay = 1500;
 }
 if (mode === "hard") {
     damage = 30;
@@ -123,7 +119,7 @@ if (mode === "hard") {
 }
 
 /* --------------------------------------------------------
-   BASE STATE
+   GAME STATE
 -------------------------------------------------------- */
 let health = 100;
 
@@ -133,225 +129,65 @@ const healthBar = document.getElementById("health-bar");
 const heroStatus = document.getElementById("hero-status");
 
 /* --------------------------------------------------------
-   30 SORU (EASY / NORMAL / HARD)
-   Hepsi konum tabanlı, lat / lng içeriyor
+   QUESTIONS (EASY / NORMAL / HARD) — 30 TOTAL
 -------------------------------------------------------- */
+
 const questionsEasy = [
-    {
-        question: "Where is Turkey's capital located?",
-        answers: ["Ankara", "Istanbul", "Izmir", "Bursa"],
-        correct: "Ankara",
-        lat: 39.93, lng: 32.86
-    },
-    {
-        question: "What is the capital of France?",
-        answers: ["Paris", "Lyon", "Nice", "Marseille"],
-        correct: "Paris",
-        lat: 48.8566, lng: 2.3522
-    },
-    {
-        question: "What is the capital of Japan?",
-        answers: ["Seoul", "Tokyo", "Beijing", "Osaka"],
-        correct: "Tokyo",
-        lat: 35.6895, lng: 139.6917
-    },
-    {
-        question: "Penguins naturally live mainly near which continent?",
-        answers: ["Africa", "Antarctica", "Europe", "Asia"],
-        correct: "Antarctica",
-        lat: -75, lng: 0
-    },
-    {
-        question: "On which continent is the Sahara Desert located?",
-        answers: ["Asia", "Africa", "Australia", "South America"],
-        correct: "Africa",
-        lat: 23, lng: 13
-    },
-    {
-        question: "In which country is Rio de Janeiro's famous carnival held?",
-        answers: ["Mexico", "Spain", "Brazil", "Portugal"],
-        correct: "Brazil",
-        lat: -22.9068, lng: -43.1729
-    },
-    {
-        question: "Where are the Pyramids of Giza?",
-        answers: ["Morocco", "Egypt", "Saudi Arabia", "Iran"],
-        correct: "Egypt",
-        lat: 29.9792, lng: 31.1342
-    },
-    {
-        question: "The Great Barrier Reef lies off the coast of which country?",
-        answers: ["Australia", "Indonesia", "India", "Philippines"],
-        correct: "Australia",
-        lat: -18.2871, lng: 147.6992
-    },
-    {
-        question: "Which ocean is on the east coast of the United States?",
-        answers: ["Pacific Ocean", "Indian Ocean", "Arctic Ocean", "Atlantic Ocean"],
-        correct: "Atlantic Ocean",
-        lat: 35, lng: -65
-    },
-    {
-        question: "In which country is the city of New York located?",
-        answers: ["Canada", "United States", "United Kingdom", "Mexico"],
-        correct: "United States",
-        lat: 40.7128, lng: -74.006
-    }
+    { question: "Where is Turkey's capital located?", answers: ["Ankara", "Istanbul", "Izmir", "Bursa"], correct: "Ankara", lat: 39.93, lng: 32.86 },
+    { question: "What is the capital of France?", answers: ["Paris", "Lyon", "Nice", "Marseille"], correct: "Paris", lat: 48.8566, lng: 2.3522 },
+    { question: "What is the capital of Japan?", answers: ["Seoul", "Tokyo", "Beijing", "Osaka"], correct: "Tokyo", lat: 35.6895, lng: 139.6917 },
+    { question: "Penguins mainly live near which continent?", answers: ["Africa", "Antarctica", "Europe", "Asia"], correct: "Antarctica", lat: -75, lng: 0 },
+    { question: "Where is the Sahara Desert located?", answers: ["Asia", "Africa", "Australia", "South America"], correct: "Africa", lat: 23, lng: 13 },
+    { question: "Carnival is famously held in which country?", answers: ["Mexico", "Spain", "Brazil", "Portugal"], correct: "Brazil", lat: -22.9068, lng: -43.1729 },
+    { question: "Where are the Pyramids of Giza?", answers: ["Morocco", "Egypt", "Saudi Arabia", "Iran"], correct: "Egypt", lat: 29.9792, lng: 31.1342 },
+    { question: "Great Barrier Reef belongs to which country?", answers: ["Australia", "Indonesia", "India", "Philippines"], correct: "Australia", lat: -18.2871, lng: 147.6992 },
+    { question: "Which ocean is on USA east coast?", answers: ["Pacific", "Indian", "Arctic", "Atlantic"], correct: "Atlantic", lat: 35, lng: -65 },
+    { question: "Where is New York located?", answers: ["Canada", "United States", "UK", "Mexico"], correct: "United States", lat: 40.7128, lng: -74.006 }
 ];
 
 const questionsNormal = [
-    {
-        question: "Sushi is a traditional dish of which country?",
-        answers: ["China", "Japan", "Thailand", "Vietnam"],
-        correct: "Japan",
-        lat: 35.6895, lng: 139.6917
-    },
-    {
-        question: "Tango dance originally developed in which city region?",
-        answers: ["Rio de Janeiro", "Buenos Aires", "Madrid", "Lisbon"],
-        correct: "Buenos Aires",
-        lat: -34.6037, lng: -58.3816
-    },
-    {
-        question: "Paella is a famous rice dish from which country?",
-        answers: ["Italy", "Spain", "Greece", "France"],
-        correct: "Spain",
-        lat: 39.4699, lng: -0.3763
-    },
-    {
-        question: "Kimchi is a spicy fermented food from which country?",
-        answers: ["Japan", "China", "South Korea", "Malaysia"],
-        correct: "South Korea",
-        lat: 37.5665, lng: 126.978
-    },
-    {
-        question: "Baklava is a layered dessert strongly associated with which country?",
-        answers: ["Turkey", "Norway", "Brazil", "Canada"],
-        correct: "Turkey",
-        lat: 41.0082, lng: 28.9784   // İstanbul referans aldım
-    },
-    {
-        question: "Flamenco is a traditional music and dance style of which country?",
-        answers: ["Italy", "Spain", "Portugal", "France"],
-        correct: "Spain",
-        lat: 37.3891, lng: -5.9845    // Sevilla
-    },
-    {
-        question: "In which country would you find the city of Cairo by the Nile River?",
-        answers: ["Egypt", "Sudan", "Ethiopia", "Iraq"],
-        correct: "Egypt",
-        lat: 30.0444, lng: 31.2357
-    },
-    {
-        question: "The traditional wind instrument \"duduk\" is strongly linked to which country?",
-        answers: ["Finland", "Armenia", "Chile", "India"],
-        correct: "Armenia",
-        lat: 40.1792, lng: 44.4991
-    },
-    {
-        question: "In which country would you see the traditional Hula dance?",
-        answers: ["Japan", "Hawaii (USA)", "New Zealand", "India"],
-        correct: "Hawaii (USA)",
-        lat: 21.3069, lng: -157.8583
-    },
-    {
-        question: "The city of Istanbul lies on which two continents?",
-        answers: ["Europe & Asia", "Asia & Africa", "Europe & Africa", "North & South America"],
-        correct: "Europe & Asia",
-        lat: 41.0082, lng: 28.9784
-    }
+    { question: "Sushi belongs to which country?", answers: ["China", "Japan", "Thailand", "Vietnam"], correct: "Japan", lat: 35.6895, lng: 139.6917 },
+    { question: "Tango originally developed in?", answers: ["Rio", "Buenos Aires", "Madrid", "Lisbon"], correct: "Buenos Aires", lat: -34.6037, lng: -58.3816 },
+    { question: "Paella is from which country?", answers: ["Italy", "Spain", "Greece", "France"], correct: "Spain", lat: 39.4699, lng: -0.3763 },
+    { question: "Kimchi belongs to which culture?", answers: ["Japan", "China", "South Korea", "Malaysia"], correct: "South Korea", lat: 37.5665, lng: 126.978 },
+    { question: "Baklava is strongly linked to?", answers: ["Turkey", "Norway", "Brazil", "Canada"], correct: "Turkey", lat: 41.0082, lng: 28.9784 },
+    { question: "Flamenco dance is from?", answers: ["Italy", "Spain", "Portugal", "France"], correct: "Spain", lat: 37.3891, lng: -5.9845 },
+    { question: "Cairo is located in?", answers: ["Egypt", "Sudan", "Ethiopia", "Iraq"], correct: "Egypt", lat: 30.0444, lng: 31.2357 },
+    { question: "Duduk instrument originates from?", answers: ["Finland", "Armenia", "Chile", "India"], correct: "Armenia", lat: 40.1792, lng: 44.4991 },
+    { question: "Hula dance belongs to?", answers: ["Japan", "Hawaii (USA)", "New Zealand", "India"], correct: "Hawaii (USA)", lat: 21.3069, lng: -157.8583 },
+    { question: "Istanbul lies on which continents?", answers: ["Europe & Asia", "Asia & Africa", "Europe & Africa", "America"], correct: "Europe & Asia", lat: 41.0082, lng: 28.9784 }
 ];
 
 const questionsHard = [
-    {
-        question: "The Amazon rainforest is mainly located in which country?",
-        answers: ["Brazil", "Peru", "Colombia", "Bolivia"],
-        correct: "Brazil",
-        lat: -3.4653, lng: -62.2159
-    },
-    {
-        question: "Where would you find the tundra biome of Siberia?",
-        answers: ["Canada", "Russia", "Greenland", "Norway"],
-        correct: "Russia",
-        lat: 66.5, lng: 90
-    },
-    {
-        question: "The Galápagos Islands, famous for unique wildlife, belong to which country?",
-        answers: ["Peru", "Chile", "Ecuador", "Panama"],
-        correct: "Ecuador",
-        lat: -0.9538, lng: -90.9656
-    },
-    {
-        question: "The Serengeti grasslands with huge animal migrations are mainly in which country?",
-        answers: ["Kenya", "South Africa", "Tanzania", "Namibia"],
-        correct: "Tanzania",
-        lat: -2.3333, lng: 34.8333
-    },
-    {
-        question: "The traditional throat singing \"Khoomei\" is associated with which country?",
-        answers: ["Mongolia", "Germany", "Pakistan", "Spain"],
-        correct: "Mongolia",
-        lat: 47.8864, lng: 106.9057
-    },
-    {
-        question: "Where is the traditional Maori haka dance from?",
-        answers: ["New Zealand", "Indonesia", "Fiji", "South Africa"],
-        correct: "New Zealand",
-        lat: -41.2865, lng: 174.7762
-    },
-    {
-        question: "In which country is the temple complex Angkor Wat located?",
-        answers: ["Thailand", "Cambodia", "Laos", "Myanmar"],
-        correct: "Cambodia",
-        lat: 13.4125, lng: 103.867
-    },
-    {
-        question: "The musical style Reggae was born in which island country?",
-        answers: ["Cuba", "Jamaica", "Dominican Republic", "Puerto Rico"],
-        correct: "Jamaica",
-        lat: 17.9712, lng: -76.7920
-    },
-    {
-        question: "Where would you visit the active volcano Mount Etna?",
-        answers: ["Greece", "Italy (Sicily)", "Turkey", "Iceland"],
-        correct: "Italy (Sicily)",
-        lat: 37.7510, lng: 14.9934
-    },
-    {
-        question: "The traditional string instrument \"kora\" is strongly linked to musicians from which region?",
-        answers: ["West Africa", "Scandinavia", "East Asia", "Central America"],
-        correct: "West Africa",
-        lat: 13.4549, lng: -16.5790   // Gambiya civarı
-    }
+    { question: "Amazon rainforest mainly located in?", answers: ["Brazil", "Peru", "Colombia", "Bolivia"], correct: "Brazil", lat: -3.4, lng: -62 },
+    { question: "The tundra of Siberia is in?", answers: ["Canada", "Russia", "Greenland", "Norway"], correct: "Russia", lat: 66.5, lng: 90 },
+    { question: "Galapagos Islands belong to?", answers: ["Peru", "Chile", "Ecuador", "Panama"], correct: "Ecuador", lat: -0.95, lng: -90.96 },
+    { question: "Serengeti grasslands are in?", answers: ["Kenya", "South Africa", "Tanzania", "Namibia"], correct: "Tanzania", lat: -2.33, lng: 34.83 },
+    { question: "Khoomei throat singing comes from?", answers: ["Mongolia", "Germany", "Pakistan", "Spain"], correct: "Mongolia", lat: 47.8864, lng: 106.9057 },
+    { question: "Haka dance belongs to?", answers: ["New Zealand", "Indonesia", "Fiji", "South Africa"], correct: "New Zealand", lat: -41.2865, lng: 174.7762 },
+    { question: "Where is Angkor Wat located?", answers: ["Thailand", "Cambodia", "Laos", "Myanmar"], correct: "Cambodia", lat: 13.4125, lng: 103.867 },
+    { question: "Reggae was born in?", answers: ["Cuba", "Jamaica", "DR", "Puerto Rico"], correct: "Jamaica", lat: 17.9712, lng: -76.7920 },
+    { question: "Mount Etna is in?", answers: ["Greece", "Italy (Sicily)", "Turkey", "Iceland"], correct: "Italy (Sicily)", lat: 37.7510, lng: 14.9934 },
+    { question: "The kora instrument belongs to?", answers: ["West Africa", "Scandinavia", "East Asia", "Central America"], correct: "West Africa", lat: 13.4549, lng: -16.5790 }
 ];
 
-/* Zorluk moduna göre havuz oluştur */
+/* POOL BY MODE */
 let questionPool = [];
-if (mode === "easy") {
-    questionPool = questionsEasy;
-} else if (mode === "hard") {
-    questionPool = questionsHard;
-} else {
-    // normal: kolay + orta karışık
-    questionPool = questionsEasy.concat(questionsNormal);
-}
+if (mode === "easy") questionPool = questionsEasy;
+else if (mode === "hard") questionPool = questionsHard;
+else questionPool = questionsEasy.concat(questionsNormal);
 
 /* --------------------------------------------------------
-   SORU YÜKLE
+   LOAD QUESTION
 -------------------------------------------------------- */
 function loadQuestion() {
-    if (health <= 0) {
-        endGame(false);
-        return;
-    }
+    if (health <= 0) return endGame(false);
 
     const q = questionPool[Math.floor(Math.random() * questionPool.length)];
 
     questionText.textContent = q.question;
-    questionText.dataset.lat = q.lat;
-    questionText.dataset.lng = q.lng;
-
     answersContainer.innerHTML = "";
+
     heroStatus.textContent = "Answer quickly to protect Earth!";
     heroStatus.style.color = "#00eaff";
 
@@ -359,22 +195,19 @@ function loadQuestion() {
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.textContent = ans;
-
         btn.onclick = () => checkAnswer(q, ans === q.correct);
-
         answersContainer.appendChild(btn);
     });
 }
 
 /* --------------------------------------------------------
-   CEVAP KONTROL
+   CHECK ANSWER
 -------------------------------------------------------- */
 function checkAnswer(question, isCorrect) {
     if (isCorrect) {
         heroStatus.textContent = "Nice hit! Correct answer.";
         heroStatus.style.color = "#39ff39";
     } else {
-        // Can azalt
         health -= damage;
         if (health < 0) health = 0;
         healthBar.style.width = health + "%";
@@ -385,48 +218,40 @@ function checkAnswer(question, isCorrect) {
         heroStatus.textContent = "Wrong! The correct location is under attack!";
         heroStatus.style.color = "red";
 
-        // Dünya üzerinde hedefi vur
         addHitEffect(question.lat, question.lng);
 
-        // Hero shake
         heroImage.classList.add("hero-damage");
         setTimeout(() => heroImage.classList.remove("hero-damage"), 300);
 
         if (health <= 0) {
-            setTimeout(() => endGame(false), 900);
-            return;
+            return setTimeout(() => endGame(false), 900);
         }
     }
 
-    // sıradaki soru
     setTimeout(loadQuestion, questionDelay);
 }
 
 /* --------------------------------------------------------
-   OYUN BAŞLANGICI
+   GAME START
 -------------------------------------------------------- */
-setTimeout(loadQuestion, 1200);
+setTimeout(loadQuestion, 1000);
 
 /* --------------------------------------------------------
-   OYUN BİTİŞİ (şimdilik alert)
+   GAME END
 -------------------------------------------------------- */
 function endGame(win) {
-    alert(win ? "You win!" : "You lost... Earth is destroyed.");
-    // İstersen buradan ana menüye geri yönlendirebilirsin:
-    // window.location.href = "../index.html";
+    alert(win ? "You win!" : "You lost… Earth is destroyed.");
 }
 
 /* --------------------------------------------------------
-   YILDIZLI ARKA PLAN (same starfield as main)
+   STARFIELD BACKGROUND
 -------------------------------------------------------- */
 const canvas = document.getElementById("starfield");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-    const DPR = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * DPR;
-    canvas.height = window.innerHeight * DPR;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
@@ -434,7 +259,7 @@ window.addEventListener("resize", resizeCanvas);
 let stars = [];
 let shooting = [];
 
-function initStars(count = 250) {
+function initStars(count = 200) {
     stars = [];
     for (let i = 0; i < count; i++) {
         stars.push({
@@ -458,16 +283,16 @@ function newShootingStar() {
     });
 }
 
-let tOld = 0;
+let last = 0;
 let timer = 0;
 let nextStar = 1.5;
 
 function starLoop(t) {
-    const dt = (t - tOld) / 1000;
-    tOld = t;
+    let dt = (t - last) / 1000;
+    last = t;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // normal yıldızlar
     ctx.fillStyle = "white";
     for (const s of stars) {
         s.y += s.speed * dt;
@@ -480,7 +305,6 @@ function starLoop(t) {
         ctx.fill();
     }
 
-    // kayan yıldız üret
     timer += dt;
     if (timer > nextStar) {
         newShootingStar();
@@ -488,7 +312,6 @@ function starLoop(t) {
         nextStar = 1 + Math.random() * 2.5;
     }
 
-    // kayan yıldız çiz
     ctx.lineWidth = 2;
     for (let i = shooting.length - 1; i >= 0; i--) {
         const sh = shooting[i];
@@ -497,11 +320,13 @@ function starLoop(t) {
             shooting.splice(i, 1);
             continue;
         }
+
         sh.x += sh.vx * dt;
         sh.y += sh.vy * dt;
 
         const alpha = 1 - sh.life / sh.maxLife;
         ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+
         ctx.beginPath();
         ctx.moveTo(sh.x, sh.y);
         ctx.lineTo(sh.x - sh.vx * 0.15, sh.y - sh.vy * 0.15);
