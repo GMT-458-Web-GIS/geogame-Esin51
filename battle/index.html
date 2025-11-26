@@ -3,68 +3,39 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Planet Smash – Battle Zone</title>
-    
+    <title>Planet Smash – Battle</title>
     <link rel="stylesheet" href="style.css" />
-
     <script src="//unpkg.com/globe.gl"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div id="dynamic-background"></div>
-    
-    <canvas id="starfield" style="position: fixed; top:0; left:0; pointer-events: none; z-index: 1; opacity: 0.6;"></canvas>
+    <canvas id="starfield"></canvas>
 
     <div id="hp-container">
         <div id="hp-bar"></div>
         <div id="hp-text">SHIELD INTEGRITY: 100%</div>
     </div>
 
-    <div id="hero-container">
-        <img id="hero-image" src="" alt="Hero"> 
-        
-        <div id="hero-bubble">
-            <span id="hero-msg">System initialized. Waiting for targets...</span>
-        </div>
-
-        <div id="timer-ring">
-            <svg class="progress-ring" width="60" height="60">
-                <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
-            </svg>
-            <div id="timer-text">100</div>
-        </div>
-    </div>
-
     <div id="globe-container"></div>
 
-    <div id="battle-ui" class="ui-theme-default">
-        <div id="question-box">
-            <div id="enemy-indicator">⚠️ THREAT DETECTED: <span id="enemy-name">SCANNING...</span></div>
-            <p id="question-text">Loading mission data...</p>
-        </div>
-        
-        <div id="answers-grid">
-            </div>
+    <div id="hero-display">
+        <img id="hero-img" src="" alt="Hero">
+        <div id="hero-bubble">Target locked. Awaiting orders.</div>
     </div>
 
-    <div id="final-screen" class="hidden">
-        <div id="final-content">
-            <h1 id="final-title">GAME OVER</h1>
-            
-            <div id="final-score-box">
-                <p>SCORE: <span id="final-score">0</span></p>
-                <p>ACCURACY: <span id="final-acc">0%</span></p>
-            </div>
-            
-            <p id="final-hero-msg">"Mission failed..."</p>
-            
-            <div class="final-buttons">
-                <button id="restart-btn" onclick="location.reload()">RETRY MISSION</button>
-                <button id="menu-btn" onclick="window.location.href='../index.html'">MAIN MENU</button>
-            </div>
+    <div id="battle-ui">
+        <div id="question-box">
+            <h2 id="question-text">Initializing Mission...</h2>
         </div>
+        <div id="answers-grid"></div>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h1 id="end-title">GAME OVER</h1>
+        <p id="end-reason">Mission Failed</p>
+        <button class="back-btn" onclick="location.href='../index.html'">MAIN MENU</button>
+        <button class="back-btn" onclick="location.reload()">RETRY</button>
     </div>
 
     <script src="game.js"></script>
