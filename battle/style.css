@@ -4,7 +4,7 @@ body {
     overflow: hidden;
     background: black;
     color: white;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #starfield {
@@ -18,60 +18,78 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
-    height: 22px;
+    height: 20px;
     background: #222;
     z-index: 50;
+    border-bottom: 2px solid #555;
 }
 
 #health-bar {
     width: 100%;
     height: 100%;
-    background: #39ff39;
+    background: #39ff39; /* Yeşil başlar */
+    transition: width 0.5s, background-color 0.5s;
 }
 
-/* Hero */
+/* Hero Image - Sağ Altta */
 #hero-image {
     position: absolute;
-    bottom: 40px;
-    right: 70px;
-    width: 300px;
+    bottom: 0;
+    right: 20px;
+    width: 350px; /* Görsel boyutu */
     z-index: 30;
+    pointer-events: none;
 }
 
-/* Globe */
+/* Globe Container - Yukarıda Ortada */
 #globe-container {
     position: absolute;
-    top: 10%;
+    top: 5%;  /* Yukarıya yaklaştırdık */
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    /* pointer-events: none; -> İstersen bunu kaldırabilirsin, dünyayı mouse ile çevirmek için */
 }
 
-/* QUESTIONS */
+/* Question Area - Dünyanın hemen altında */
 #question-area {
     position: absolute;
-    top: 65%;
+    top: 55%; /* Soruları yukarı çektik (Eskiden 65% idi) */
     width: 100%;
     text-align: center;
     z-index: 40;
 }
 
 #question-text {
-    font-size: 28px;
-    margin-bottom: 15px;
-    text-shadow: 0 0 5px black; /* Yazı okunabilirliği için gölge */
+    font-size: 26px;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px black;
+    background: rgba(0, 0, 0, 0.6);
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+}
+
+.status-text {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+#answers-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
 .answer-btn {
-    display: block;
-    margin: 10px auto;
-    width: 350px;
-    padding: 14px;
-    font-size: 20px;
-    background: #1a1a1a;
+    width: 400px;
+    padding: 12px;
+    font-size: 18px;
+    background: rgba(20, 20, 20, 0.9);
     border: 2px solid #00eaff;
-    border-radius: 12px;
+    border-radius: 8px;
     color: white;
     cursor: pointer;
     transition: all 0.2s;
@@ -79,11 +97,7 @@ body {
 
 .answer-btn:hover {
     transform: scale(1.05);
-    background: #333;
-}
-
-.status-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
+    background: #00eaff;
+    color: black;
+    box-shadow: 0 0 15px #00eaff;
 }
