@@ -1,103 +1,298 @@
+/* GENEL AYARLAR */
 body {
     margin: 0;
     padding: 0;
     overflow: hidden;
     background: black;
+    font-family: 'Rajdhani', sans-serif;
     color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+#dynamic-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(circle at center, #0b1026 0%, #000000 100%);
+    transition: background 1s ease;
 }
 
 #starfield {
     position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: 1;
+    opacity: 0.6;
 }
 
-/* Health bar */
-#health-bar-container {
+/* HP BAR */
+#hp-container {
     position: fixed;
     top: 0;
+    left: 0;
     width: 100%;
-    height: 20px;
-    background: #222;
-    z-index: 50;
-    border-bottom: 2px solid #555;
+    height: 25px;
+    background: rgba(0,0,0,0.8);
+    z-index: 100;
+    border-bottom: 1px solid #333;
 }
 
-#health-bar {
+#hp-bar {
     width: 100%;
     height: 100%;
-    background: #39ff39; /* Yeşil başlar */
-    transition: width 0.5s, background-color 0.5s;
+    background: linear-gradient(90deg, #00ff00, #adff2f);
+    box-shadow: 0 0 15px #00ff00;
+    transition: width 0.3s, background 0.3s, box-shadow 0.3s;
 }
 
-/* Hero Image - Sağ Altta */
-#hero-image {
+#hp-text {
     position: absolute;
-    bottom: 0;
-    right: 20px;
-    width: 350px; /* Görsel boyutu */
-    z-index: 30;
-    pointer-events: none;
-}
-
-/* Globe Container - Yukarıda Ortada */
-#globe-container {
-    position: absolute;
-    top: 5%;  /* Yukarıya yaklaştırdık */
+    top: 2px;
     left: 50%;
     transform: translateX(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px black;
+}
+
+/* HERO AREA (SOL ÜST) */
+#hero-container {
+    position: fixed;
+    top: 50px;
+    left: 30px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#hero-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+    background: rgba(0,0,0,0.5);
+}
+
+#hero-bubble {
+    background: rgba(10, 20, 40, 0.85);
+    border: 1px solid #00eaff;
+    color: #00eaff;
+    padding: 15px 20px;
+    border-radius: 0 20px 20px 20px;
+    max-width: 250px;
+    font-size: 18px;
+    line-height: 1.3;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
+
+/* TIMER RING */
+#timer-ring {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    stroke-dasharray: 163; /* 2 * PI * r */
+    stroke-dashoffset: 0;
+    stroke: #00eaff;
+    filter: drop-shadow(0 0 4px #00eaff);
+}
+
+#timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* GLOBE */
+#globe-container {
+    position: absolute;
+    top: 40%; /* Ortanın biraz yukarısı */
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 10;
 }
 
-/* Question Area - Dünyanın hemen altında */
-#question-area {
-    position: absolute;
-    top: 55%; /* Soruları yukarı çektik (Eskiden 65% idi) */
-    width: 100%;
+/* BATTLE UI (ALT PANEL) */
+#battle-ui {
+    position: fixed;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.5s ease;
+}
+
+#question-box {
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 15px;
     text-align: center;
-    z-index: 40;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+#enemy-indicator {
+    font-size: 14px;
+    color: #ff4d4d;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+    text-shadow: 0 0 10px red;
+    opacity: 0.8;
 }
 
 #question-text {
-    font-size: 26px;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 4px black;
-    background: rgba(0, 0, 0, 0.6);
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 8px;
+    font-size: 24px;
+    margin: 0;
+    font-weight: 600;
 }
 
-.status-text {
-    font-size: 22px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8);
-}
-
-#answers-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+#answers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2x2 Grid */
+    gap: 15px;
 }
 
 .answer-btn {
-    width: 400px;
-    padding: 12px;
-    font-size: 18px;
-    background: rgba(20, 20, 20, 0.9);
-    border: 2px solid #00eaff;
-    border-radius: 8px;
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
+    padding: 20px;
+    font-size: 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
 }
 
+/* HOVER & CLICK EFFECTS */
 .answer-btn:hover {
-    transform: scale(1.05);
-    background: #00eaff;
-    color: black;
-    box-shadow: 0 0 15px #00eaff;
+    transform: scale(1.03);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    border-color: white;
 }
+
+.answer-btn:active {
+    transform: scale(0.95);
+}
+
+.answer-btn.correct {
+    background: rgba(0, 255, 0, 0.2) !important;
+    border-color: #00ff00 !important;
+    box-shadow: 0 0 30px #00ff00 !important;
+    color: #00ff00;
+}
+
+.answer-btn.wrong {
+    background: rgba(255, 0, 0, 0.2) !important;
+    border-color: red !important;
+    box-shadow: 0 0 30px red !important;
+    color: red;
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
+
+/* DİNAMİK UI TEMALARI (JS ile eklenecek sınıflar) */
+/* Meteor Theme (Orange) */
+.ui-theme-meteor #hero-bubble, .ui-theme-meteor #question-box {
+    border-color: #ff8800;
+    box-shadow: 0 0 15px rgba(255, 136, 0, 0.3);
+}
+.ui-theme-meteor .progress-ring__circle { stroke: #ff8800; filter: drop-shadow(0 0 5px #ff8800); }
+.ui-theme-meteor #hero-bubble { color: #ffdca8; }
+
+/* Ship Theme (Cyan) */
+.ui-theme-ship #hero-bubble, .ui-theme-ship #question-box {
+    border-color: #00eaff;
+    box-shadow: 0 0 15px rgba(0, 234, 255, 0.3);
+}
+.ui-theme-ship .progress-ring__circle { stroke: #00eaff; }
+
+/* Void Theme (Purple) */
+.ui-theme-void #hero-bubble, .ui-theme-void #question-box {
+    border-color: #b300ff;
+    box-shadow: 0 0 15px rgba(179, 0, 255, 0.3);
+}
+.ui-theme-void .progress-ring__circle { stroke: #b300ff; }
+
+/* Brute Theme (Red) */
+.ui-theme-brute #hero-bubble, .ui-theme-brute #question-box {
+    border-color: #ff003c;
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.3);
+}
+.ui-theme-brute .progress-ring__circle { stroke: #ff003c; }
+
+/* DIFFICULTY SCREEN */
+#difficulty-screen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.glitch-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 50px;
+    color: white;
+    text-shadow: 2px 2px 0px #00eaff, -2px -2px 0px #ff003c;
+    margin-bottom: 50px;
+}
+
+#difficulty-options {
+    display: flex;
+    gap: 30px;
+}
+
+.diff-card {
+    width: 200px;
+    padding: 30px 20px;
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #555;
+    border-radius: 30px; /* Oval */
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.diff-card h2 { margin: 0; font-family: 'Orbitron'; }
+.diff-card p { color: #aaa; font-size: 14px; }
+
+/* Zorluk Renkleri */
+.diff-easy { border-color: #aaffd5; box-shadow: 0 0 10px #aaffd5; color: #aaffd5; }
+.diff-normal { border-

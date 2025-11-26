@@ -1,199 +1,380 @@
-// =====================================
-// 1. HERO LOAD (KAHRAMAN SEÇİMİ)
-// =====================================
+// ==========================================
+// 1. GAME CONFIG & STATE
+// ==========================================
 const heroImage = document.getElementById("hero-image");
-const selectedHero = localStorage.getItem("ps_selectedHero") || "Ceres";
-
+const selectedHeroName = localStorage.getItem("ps_selectedHero") || "Ceres";
 const heroImages = {
     Ceres: "../characters/ceres.png",
     Juno: "../characters/juno.png",
     Mars: "../characters/mars.png",
     Venus: "../characters/venus.png",
 };
+heroImage.src = heroImages[selectedHeroName] || heroImages["Ceres"];
 
-// Resim varsa yükle
-if (heroImages[selectedHero]) {
-    heroImage.src = heroImages[selectedHero];
-}
+// Hero Colors (Reflection için)
+const heroColors = {
+    Ceres: "#ffd447", // Gold
+    Juno: "#b43fff",  // Purple
+    Mars: "#ff3b3b",  // Red
+    Venus: "#ff6bd6"  // Pink
+};
 
-// =====================================
-// 2. GLOBE INIT (DÜNYA AYARLARI)
-// =====================================
+let gameState = {
+    hp: 100,
+    score: 0,
+    questionIndex: 0,
+    correctCount: 0,
+    difficulty: 'normal',
+    isGameOver: false,
+    timer: 15,
+    maxTime: 15,
+    timerInterval: null
+};
+
+// ==========================================
+// 2. WORLD & RENDERING (Globe.gl)
+// ==========================================
 const worldElement = document.getElementById("globe-container");
-
 const world = Globe()
     (worldElement)
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-blue-marble.jpg")
     .bumpImageUrl("//unpkg.com/three-globe/example/img/earth-topology.png")
-    .backgroundColor("rgba(0,0,0,0)") // Arka plan şeffaf
+    .backgroundColor("rgba(0,0,0,0)")
     .showAtmosphere(true)
-    .atmosphereColor("lightblue")
-    .atmosphereAltitude(0.15)
-    // --- BOMBA EFEKTİ (RINGS) AYARLARI ---
-    .ringColor(() => "red")           // Halkalar kırmızı
-    .ringMaxRadius(20)                // Halkanın büyüyeceği maksimum çap
-    .ringPropagationSpeed(4)          // Yayılma hızı
-    .ringRepeatPeriod(400);           // Halkanın tekrar etme sıklığı
+    .atmosphereColor("#4444ff") // Başlangıç rengi
+    .atmosphereAltitude(0.2)
+    // --- EFEKT KATMANLARI ---
+    .ringColor(d => d.color)
+    .ringMaxRadius(d => d.radius)
+    .ringPropagationSpeed(d => d.speed)
+    .ringRepeatPeriod(d => d.repeat);
 
-// Otomatik Dönme Ayarları
+// Controls
 world.controls().autoRotate = true;
-world.controls().autoRotateSpeed = 0.6;
+world.controls().autoRotateSpeed = 0.5;
+world.controls().enableZoom = false; // Zoom kilitli (sinematik)
 
-// Ekran Boyutlandırma
 function resize() {
-    // Globe boyutunu ekranın %55'i kadar yapıyoruz
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.55;
+    // Dünya boyutu: Ekranın %45'i (Seçim B)
+    const size = Math.min(window.innerWidth, window.innerHeight) * 0.45;
     world.width(size);
     world.height(size);
 }
 resize();
 window.addEventListener("resize", resize);
 
-// =====================================
-// 3. SORU HAVUZU (VERDİĞİN VERİLER)
-// =====================================
+// ==========================================
+// 3. ENEMY & DATA SYSTEM
+// ==========================================
+const enemyTypes = {
+    meteor: { name: "METEOR SHOWER", theme: "ui-theme-meteor", color: "orange", bg: "radial-gradient(circle, #261100, #000)" },
+    ship:   { name: "ALIEN CRUISER", theme: "ui-theme-ship",   color: "cyan",   bg: "radial-gradient(circle, #001526, #000)" },
+    void:   { name: "VOID SERPENT",  theme: "ui-theme-void",   color: "purple", bg: "radial-gradient(circle, #1a0026, #000)" },
+    brute:  { name: "ASTRA BRUTE",   theme: "ui-theme-brute",  color: "red",    bg: "radial-gradient(circle, #260000, #000)" }
+};
 
-const questionsEasy = [
-    { question: "Where is Turkey's capital located?", answers: ["Ankara", "Istanbul", "Izmir", "Bursa"], correct: "Ankara", lat: 39.93, lng: 32.86 },
-    { question: "What is the capital of France?", answers: ["Paris", "Lyon", "Nice", "Marseille"], correct: "Paris", lat: 48.8566, lng: 2.3522 },
-    { question: "What is the capital of Japan?", answers: ["Seoul", "Tokyo", "Beijing", "Osaka"], correct: "Tokyo", lat: 35.6895, lng: 139.6917 },
-    { question: "Penguins mainly live near which continent?", answers: ["Africa", "Antarctica", "Europe", "Asia"], correct: "Antarctica", lat: -75, lng: 0 },
-    { question: "Where is the Sahara Desert located?", answers: ["Asia", "Africa", "Australia", "South America"], correct: "Africa", lat: 23, lng: 13 },
-    { question: "Carnival is famously held in which country?", answers: ["Mexico", "Spain", "Brazil", "Portugal"], correct: "Brazil", lat: -22.9068, lng: -43.1729 },
-    { question: "Where are the Pyramids of Giza?", answers: ["Morocco", "Egypt", "Saudi Arabia", "Iran"], correct: "Egypt", lat: 29.9792, lng: 31.1342 },
-    { question: "Great Barrier Reef belongs to which country?", answers: ["Australia", "Indonesia", "India", "Philippines"], correct: "Australia", lat: -18.2871, lng: 147.6992 },
-    { question: "Which ocean is on USA east coast?", answers: ["Pacific", "Indian", "Arctic", "Atlantic"], correct: "Atlantic", lat: 35, lng: -65 },
-    { question: "Where is New York located?", answers: ["Canada", "United States", "UK", "Mexico"], correct: "United States", lat: 40.7128, lng: -74.006 }
+// Soru Havuzu (Örnek 10 soru - normalde daha geniş olur)
+const questionsPool = [
+    { q: "Where is the Eiffel Tower?", ans: ["Paris", "London", "Berlin", "Rome"], cor: "Paris", lat: 48.85, lng: 2.35 },
+    { q: "Capital of Japan?", ans: ["Tokyo", "Osaka", "Seoul", "Beijing"], cor: "Tokyo", lat: 35.68, lng: 139.69 },
+    { q: "Largest Ocean?", ans: ["Pacific", "Atlantic", "Indian", "Arctic"], cor: "Pacific", lat: 0, lng: 160 },
+    { q: "Pyramids location?", ans: ["Egypt", "Mexico", "Peru", "Sudan"], cor: "Egypt", lat: 29.97, lng: 31.13 },
+    { q: "Amazon Rainforest?", ans: ["Brazil", "Canada", "Russia", "China"], cor: "Brazil", lat: -3.4, lng: -62 },
+    { q: "Penguin habitat?", ans: ["Antarctica", "Alaska", "Greenland", "Norway"], cor: "Antarctica", lat: -75, lng: 0 },
+    { q: "Capital of USA?", ans: ["Washington DC", "New York", "LA", "Chicago"], cor: "Washington DC", lat: 38.90, lng: -77.03 },
+    { q: "Taj Mahal country?", ans: ["India", "Pakistan", "Nepal", "Iran"], cor: "India", lat: 27.17, lng: 78.04 },
+    { q: "Sydney Opera House?", ans: ["Australia", "UK", "USA", "NZ"], cor: "Australia", lat: -33.85, lng: 151.21 },
+    { q: "Colosseum city?", ans: ["Rome", "Milan", "Athens", "Venice"], cor: "Rome", lat: 41.89, lng: 12.49 }
 ];
 
-const questionsNormal = [
-    { question: "Sushi belongs to which country?", answers: ["China", "Japan", "Thailand", "Vietnam"], correct: "Japan", lat: 35.6895, lng: 139.6917 },
-    { question: "Tango originally developed in?", answers: ["Rio", "Buenos Aires", "Madrid", "Lisbon"], correct: "Buenos Aires", lat: -34.6037, lng: -58.3816 },
-    { question: "Paella is from which country?", answers: ["Italy", "Spain", "Greece", "France"], correct: "Spain", lat: 39.4699, lng: -0.3763 },
-    { question: "Kimchi belongs to which culture?", answers: ["Japan", "China", "South Korea", "Malaysia"], correct: "South Korea", lat: 37.5665, lng: 126.978 },
-    { question: "Baklava is strongly linked to?", answers: ["Turkey", "Norway", "Brazil", "Canada"], correct: "Turkey", lat: 41.0082, lng: 28.9784 },
-    { question: "Flamenco dance is from?", answers: ["Italy", "Spain", "Portugal", "France"], correct: "Spain", lat: 37.3891, lng: -5.9845 },
-    { question: "Cairo is located in?", answers: ["Egypt", "Sudan", "Ethiopia", "Iraq"], correct: "Egypt", lat: 30.0444, lng: 31.2357 },
-    { question: "Duduk instrument originates from?", answers: ["Finland", "Armenia", "Chile", "India"], correct: "Armenia", lat: 40.1792, lng: 44.4991 },
-    { question: "Hula dance belongs to?", answers: ["Japan", "Hawaii (USA)", "New Zealand", "India"], correct: "Hawaii (USA)", lat: 21.3069, lng: -157.8583 },
-    { question: "Istanbul lies on which continents?", answers: ["Europe & Asia", "Asia & Africa", "Europe & Africa", "America"], correct: "Europe & Asia", lat: 41.0082, lng: 28.9784 }
+let currentDeck = [];
+let currentEnemy = null;
+
+// ==========================================
+// 4. HERO DIALOGUE SYSTEM (PHASES)
+// ==========================================
+function getHeroQuote(phase, type) {
+    // Basit bir faz sistemi
+    // Phase 1: Funny, Phase 2: Serious, Phase 3: Panic/Command
+    const quotes = {
+        Ceres: {
+            start: ["Hehe, warm-up time.", "Let's burn them nicely."],
+            mid:   ["Focus! They are getting hot.", "Sun flares ready."],
+            end:   ["ANSWER NOW!", "EARTH IS BURNING! REACT!"]
+        },
+        Juno: {
+            start: ["Too slow... kidding.", "Cute little aliens."],
+            mid:   ["Shadows are rising.", "Stay sharp."],
+            end:   ["MOVE. NOW.", "DON'T HESITATE!"]
+        },
+        Mars: {
+            start: ["Let me punch it!", "Tiny ships. Hah!"],
+            mid:   ["Hit harder! Answer faster!", "They keep coming!"],
+            end:   ["SMASH THE BUTTON!", "NO! DEFEND THE PLANET!"]
+        },
+        Venus: {
+            start: ["Aww, look at them.", "Let's bring harmony."],
+            mid:   ["Please focus.", "The harmony is breaking."],
+            end:   ["SAVE US!", "THE LIGHT IS FADING!"]
+        }
+    };
+
+    const heroQ = quotes[selectedHeroName] || quotes["Ceres"];
+    if (gameState.questionIndex < 3) return heroQ.start[Math.floor(Math.random() * heroQ.start.length)];
+    if (gameState.questionIndex < 7) return heroQ.mid[Math.floor(Math.random() * heroQ.mid.length)];
+    return heroQ.end[Math.floor(Math.random() * heroQ.end.length)];
+}
+
+// ==========================================
+// 5. UI & DIFFICULTY LOGIC
+// ==========================================
+
+// Difficulty Screen Init
+const diffOptions = [
+    { id: 'easy', name: 'EASY', desc: 'Casual Orbit', class: 'diff-easy' },
+    { id: 'normal', name: 'NORMAL', desc: 'Standard Galaxy', class: 'diff-normal' },
+    { id: 'hard', name: 'HARD', desc: 'Solar Storm', class: 'diff-hard' },
+    { id: 'chaos', name: 'CHAOS', desc: 'Void Mode', class: 'diff-chaos' }
 ];
 
-const questionsHard = [
-    { question: "Amazon rainforest mainly located in?", answers: ["Brazil", "Peru", "Colombia", "Bolivia"], correct: "Brazil", lat: -3.4, lng: -62 },
-    { question: "The tundra of Siberia is in?", answers: ["Canada", "Russia", "Greenland", "Norway"], correct: "Russia", lat: 66.5, lng: 90 },
-    { question: "Galapagos Islands belong to?", answers: ["Peru", "Chile", "Ecuador", "Panama"], correct: "Ecuador", lat: -0.95, lng: -90.96 },
-    { question: "Serengeti grasslands are in?", answers: ["Kenya", "South Africa", "Tanzania", "Namibia"], correct: "Tanzania", lat: -2.33, lng: 34.83 },
-    { question: "Khoomei throat singing comes from?", answers: ["Mongolia", "Germany", "Pakistan", "Spain"], correct: "Mongolia", lat: 47.8864, lng: 106.9057 },
-    { question: "Haka dance belongs to?", answers: ["New Zealand", "Indonesia", "Fiji", "South Africa"], correct: "New Zealand", lat: -41.2865, lng: 174.7762 },
-    { question: "Where is Angkor Wat located?", answers: ["Thailand", "Cambodia", "Laos", "Myanmar"], correct: "Cambodia", lat: 13.4125, lng: 103.867 },
-    { question: "Reggae was born in?", answers: ["Cuba", "Jamaica", "DR", "Puerto Rico"], correct: "Jamaica", lat: 17.9712, lng: -76.7920 },
-    { question: "Mount Etna is in?", answers: ["Greece", "Italy (Sicily)", "Turkey", "Iceland"], correct: "Italy (Sicily)", lat: 37.7510, lng: 14.9934 },
-    { question: "The kora instrument belongs to?", answers: ["West Africa", "Scandinavia", "East Asia", "Central America"], correct: "West Africa", lat: 13.4549, lng: -16.5790 }
-];
+const diffContainer = document.getElementById("difficulty-options");
+diffOptions.forEach(opt => {
+    const div = document.createElement("div");
+    div.className = `diff-card ${opt.class}`;
+    div.innerHTML = `<h2>${opt.name}</h2><p>${opt.desc}</p>`;
+    div.onclick = () => startGame(opt.id);
+    diffContainer.appendChild(div);
+});
 
-// Tüm soruları birleştiriyoruz
-const allQuestions = [...questionsEasy, ...questionsNormal, ...questionsHard];
+function startGame(difficulty) {
+    gameState.difficulty = difficulty;
+    document.getElementById("difficulty-screen").classList.add("hidden");
+    
+    // Soru destesini hazırla (Randomize)
+    currentDeck = [...questionsPool].sort(() => 0.5 - Math.random()).slice(0, 10);
+    
+    loadNextQuestion();
+}
 
-// =====================================
-// 4. OYUN DEĞİŞKENLERİ
-// =====================================
-let health = 100;
-let currentQuestion = null;
+// ==========================================
+// 6. BATTLE LOOP
+// ==========================================
+const uiContainer = document.getElementById("battle-ui");
+const bgContainer = document.getElementById("dynamic-background");
+const bubbleMsg = document.getElementById("hero-msg");
+const bubbleBox = document.getElementById("hero-bubble");
+const hpBar = document.getElementById("hp-bar");
+const hpText = document.getElementById("hp-text");
 
-const questionText = document.getElementById("question-text");
-const answersContainer = document.getElementById("answers-container");
-const heroStatus = document.getElementById("hero-status");
-const healthBar = document.getElementById("health-bar");
+function loadNextQuestion() {
+    if (gameState.hp <= 0) { endGame(false); return; }
+    if (gameState.questionIndex >= 10) { endGame(true); return; }
 
-// =====================================
-// 5. SORU YÜKLEME FONKSİYONU
-// =====================================
-function loadQuestion() {
-    // 1. Dünyadaki bombaları (halkaları) temizle
-    world.ringsData([]);
+    const qData = currentDeck[gameState.questionIndex];
+    gameState.questionIndex++;
 
-    // 2. Rastgele bir soru seç
-    currentQuestion = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+    // 1. DÜŞMAN BELİRLE (Random)
+    const types = Object.keys(enemyTypes);
+    const rndType = types[Math.floor(Math.random() * types.length)];
+    currentEnemy = enemyTypes[rndType];
 
-    // 3. Ekrana yaz
-    questionText.textContent = currentQuestion.question;
-    answersContainer.innerHTML = "";
-    heroStatus.textContent = "Waiting for command...";
-    heroStatus.style.color = "white";
+    // 2. UI TEMASINI GÜNCELLE (Seçim E: Dinamik UI)
+    uiContainer.className = ""; // Reset
+    uiContainer.classList.add(currentEnemy.theme);
+    
+    bubbleBox.parentElement.className = ""; // Parent container reset if needed
+    // Bubble border color CSS handles via theme class on body or container.
+    // Burada battle-ui class'ını body'e de verebiliriz global etki için:
+    document.body.className = currentEnemy.theme;
 
-    // 4. Şıkları karıştır (Shuffle)
-    let shuffledAnswers = [...currentQuestion.answers];
-    shuffledAnswers.sort(() => Math.random() - 0.5);
+    // 3. ARKA PLAN & EFEKT
+    bgContainer.style.background = currentEnemy.bg;
+    document.getElementById("enemy-name").textContent = currentEnemy.name;
+    document.getElementById("enemy-name").style.color = currentEnemy.color;
 
-    // 5. Butonları oluştur
-    shuffledAnswers.forEach(ans => {
+    // 4. HERO KONUŞSUN
+    bubbleMsg.textContent = getHeroQuote();
+
+    // 5. SORUYU YAZ
+    document.getElementById("question-text").textContent = qData.q;
+    const ansGrid = document.getElementById("answers-grid");
+    ansGrid.innerHTML = "";
+    
+    let answers = [...qData.ans].sort(() => Math.random() - 0.5);
+    answers.forEach(ans => {
         const btn = document.createElement("button");
         btn.className = "answer-btn";
         btn.textContent = ans;
-        btn.onclick = () => checkAnswer(ans);
-        answersContainer.appendChild(btn);
+        btn.onclick = () => handleAnswer(btn, ans, qData);
+        ansGrid.appendChild(btn);
     });
+
+    // 6. ZAMANI BAŞLAT (Her soruda azalıyor)
+    // 15sn'den başlayıp 8sn'ye kadar düşüyor
+    let timeLimit = 15 - (gameState.questionIndex * 0.8);
+    if (timeLimit < 8) timeLimit = 8;
+    startTimer(timeLimit, qData);
 }
 
-// =====================================
-// 6. CEVAP KONTROLÜ (BOMBA BURADA)
-// =====================================
-function checkAnswer(selectedAnswer) {
-    // Tüm butonları pasif yap (üst üste tıklanmasın)
-    const buttons = document.querySelectorAll(".answer-btn");
-    buttons.forEach(b => b.disabled = true);
+// ==========================================
+// 7. TIMER & ANSWER HANDLING
+// ==========================================
+const circle = document.querySelector('.progress-ring__circle');
+const radius = circle.r.baseVal.value;
+const circumference = radius * 2 * Math.PI;
+circle.style.strokeDasharray = `${circumference} ${circumference}`;
+circle.style.strokeDashoffset = circumference;
 
-    const isCorrect = selectedAnswer === currentQuestion.correct;
+function setProgress(percent) {
+    const offset = circumference - (percent / 100) * circumference;
+    circle.style.strokeDashoffset = offset;
+}
+
+function startTimer(seconds, qData) {
+    gameState.maxTime = seconds;
+    gameState.timer = seconds;
+    clearInterval(gameState.timerInterval);
+    
+    document.getElementById("timer-text").textContent = Math.floor(seconds);
+    
+    gameState.timerInterval = setInterval(() => {
+        gameState.timer -= 0.1;
+        const percent = (gameState.timer / gameState.maxTime) * 100;
+        setProgress(percent);
+        document.getElementById("timer-text").textContent = Math.ceil(gameState.timer);
+
+        if (gameState.timer <= 0) {
+            clearInterval(gameState.timerInterval);
+            handleAnswer(null, null, qData); // Time's up
+        }
+    }, 100);
+}
+
+function handleAnswer(btnElement, selectedAns, qData) {
+    clearInterval(gameState.timerInterval);
+    
+    // Disable buttons
+    document.querySelectorAll(".answer-btn").forEach(b => b.disabled = true);
+
+    const isCorrect = selectedAns === qData.cor;
 
     if (isCorrect) {
-        // DOĞRU CEVAP
-        heroStatus.textContent = "Target Secured!";
-        heroStatus.style.color = "#39ff39"; // Yeşil
+        if(btnElement) btnElement.classList.add("correct");
+        gameState.score += Math.ceil(gameState.timer * 10); // Hız bonusu
+        gameState.correctCount++;
+        bubbleMsg.textContent = "Target Eliminated!";
         
-        // Kısa süre sonra yeni soru
-        setTimeout(loadQuestion, 1500);
-
+        // DÜŞMAN PATLAMA EFEKTİ & REFLECTION (Seçim A)
+        triggerEnemyDeath(qData.lat, qData.lng, currentEnemy.color);
+        
+        setTimeout(loadNextQuestion, 1500);
     } else {
-        // YANLIŞ CEVAP - SALDIRI (BOMBA)
-        heroStatus.textContent = "WARNING! LOCATION UNDER ATTACK!";
-        heroStatus.style.color = "red";
+        if(btnElement) btnElement.classList.add("wrong");
+        // Doğruyu göster
+        document.querySelectorAll(".answer-btn").forEach(b => {
+            if (b.textContent === qData.cor) b.classList.add("correct");
+        });
 
-        // 1. Can Azalt
-        health -= 15;
-        if(health < 0) health = 0;
-        healthBar.style.width = health + "%";
-        healthBar.style.backgroundColor = "red"; // Bar kırmızıya döner
-
-        // 2. BOMBA PATLAT (Dünyayı o noktaya çevir ve halka oluştur)
-        triggerExplosion(currentQuestion.lat, currentQuestion.lng);
-
-        // 3. Biraz uzun beklet (efekti görsün), sonra yeni soru
+        // HASAR & SARSINTI
+        takeDamage(20);
+        bubbleMsg.textContent = "IMPACT CONFIRMED! DAMAGE CRITICAL!";
+        
+        // Dünya'da patlama (Bomba efekti)
+        world.pointOfView({ lat: qData.lat, lng: qData.lng, altitude: 2.0 }, 500);
         setTimeout(() => {
-            healthBar.style.backgroundColor = "#39ff39"; // Rengi düzelt
-            loadQuestion();
-        }, 3000);
+            world.ringsData([{ lat: qData.lat, lng: qData.lng, color: 'red', radius: 30, speed: 5, repeat: 200 }]);
+        }, 500);
+
+        setTimeout(loadNextQuestion, 2500);
     }
 }
 
-// =====================================
-// 7. PATLAMA EFEKTİ (TRIGGER EXPLOSION)
-// =====================================
-function triggerExplosion(lat, lng) {
-    // Kamerayı o konuma çevir
-    world.pointOfView({ lat: lat, lng: lng, altitude: 2.5 }, 1000);
+// ==========================================
+// 8. DAMAGE & REFLECTION (VISUALS)
+// ==========================================
 
-    // O konumda kırmızı halka verisi oluştur
-    const explosionData = [{
-        lat: lat,
-        lng: lng
-    }];
+function triggerEnemyDeath(lat, lng, colorName) {
+    // 1. REFLECTION PULSE: Dünya rengini düşman rengine çakıyoruz
+    // Globe.gl atmosphereColor kullanarak yapıyoruz
+    const flashColor = colorName === 'orange' ? '#ffaa00' :
+                       colorName === 'cyan'   ? '#00ffff' :
+                       colorName === 'purple' ? '#ff00ff' : '#ff0000';
+    
+    // Anlık Parlama
+    world.atmosphereColor(flashColor);
+    world.atmosphereAltitude(0.5); // Yükselt
 
-    // Globe'a veriyi gönder
-    world.ringsData(explosionData);
+    // 300ms sonra normale dön (Pulse Effect)
+    setTimeout(() => {
+        world.atmosphereColor("#4444ff"); // Default
+        world.atmosphereAltitude(0.2);
+    }, 400);
+
+    // 2. Patlama Halkası (Düşman renginde)
+    world.ringsData([{ lat: lat, lng: lng, color: flashColor, radius: 40, speed: 8, repeat: 100 }]);
 }
 
-// =====================================
-// 8. OYUNU BAŞLAT
-// =====================================
-setTimeout(loadQuestion, 1000);
+function takeDamage(amount) {
+    gameState.hp -= amount;
+    if(gameState.hp < 0) gameState.hp = 0;
+    
+    // UI Güncelle
+    hpBar.style.width = gameState.hp + "%";
+    hpText.textContent = `SHIELD: ${gameState.hp}%`;
+    
+    // Renk değişimi
+    if(gameState.hp < 30) {
+        hpBar.style.background = "red";
+        hpBar.style.boxShadow = "0 0 20px red";
+        // Screen Shake
+        document.body.style.transform = "translate(5px, 5px)";
+        setTimeout(() => document.body.style.transform = "translate(-5px, -5px)", 50);
+        setTimeout(() => document.body.style.transform = "translate(0, 0)", 100);
+    } else if (gameState.hp < 60) {
+        hpBar.style.background = "orange";
+    }
+}
+
+// ==========================================
+// 9. GAME OVER / VICTORY
+// ==========================================
+function endGame(win) {
+    const finalScreen = document.getElementById("final-screen");
+    const finalTitle = document.getElementById("final-title");
+    const finalMsg = document.getElementById("final-hero-msg");
+    const finalScore = document.getElementById("final-score");
+    const finalAcc = document.getElementById("final-acc");
+
+    finalScreen.classList.remove("hidden");
+    
+    finalScore.textContent = gameState.score;
+    const acc = Math.floor((gameState.correctCount / 10) * 100);
+    finalAcc.textContent = acc + "%";
+
+    if (win) {
+        // VICTORY (Seçim E: Hero Aura + Glow)
+        finalTitle.textContent = "VICTORY";
+        finalTitle.style.color = "#00ff00";
+        finalTitle.style.textShadow = "0 0 30px #00ff00";
+        finalMsg.textContent = selectedHeroName === "Mars" ? "EARTH IS SAFE. I SMASHED THEM GOOD." : "Harmony restored. Well done.";
+        
+        // VICTORY ANIMATION: Green Pulse
+        let pulse = true;
+        setInterval(() => {
+            world.atmosphereColor(pulse ? "#00ff00" : "#ffffff");
+            pulse = !pulse;
+        }, 2000);
+
+    } else {
+        // DEFEAT (Seçim B: Burning World)
+        finalTitle.textContent = "DEFEAT";
+        finalTitle.style.color = "red";
+        finalTitle.style.textShadow = "0 0 30px red";
+        finalMsg.textContent = "We failed... The planet has fallen.";
+        
+        // DEFEAT ANIMATION: Red Atmosphere
+        world.atmosphereColor("#ff0000");
+        world.atmosphereAltitude(0.6);
+        world.ringsData([]); // Efektleri temizle
+    }
+}
